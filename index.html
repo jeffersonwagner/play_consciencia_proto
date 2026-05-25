@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Play na Consciência — Modo 1: Fragmentos (Júlia)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   PALETA E TIPOGRAFIA
+   ============================================================ */
+:root {
+  --bg-deep: #0d0c10;
+  --bg-soft: #1a1820;
+  --panel: rgba(20, 18, 26, 0.92);
+  --panel-border: rgba(220, 200, 180, 0.18);
+  --text-primary: #f0ebe2;
+  --text-muted: #a89e90;
+  --accent: #c9a55c;
+  --accent-soft: rgba(201, 165, 92, 0.15);
+  --danger: #b85d5d;
+  --warning: rgba(184, 93, 93, 0.15);
+
+  --serif: 'Cormorant Garamond', 'Georgia', serif;
+  --sans: 'Inter', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  font-family: var(--sans);
+  color: var(--text-primary);
+  background: var(--bg-deep);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* ============================================================
+   PALCO DA VISUAL NOVEL
+   ============================================================ */
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+/* Tela cheia em telas grandes, mantém 16:9 em telas pequenas */
+#scene-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+#background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: opacity 0.8s ease;
+}
+
+#background.fade-out { opacity: 0; }
+
+/* Vinheta sutil para dar profundidade e ajudar leitura */
+#vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+  z-index: 1;
+}
+
+/* ============================================================
+   SPRITES DE PERSONAGENS
+   ============================================================ */
+#characters {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.character {
+  position: absolute;
+  bottom: 0;
+  height: 78vh;
+  max-height: 720px;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease, filter 0.4s ease;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6));
+}
+
+.character.visible {
+  opacity: 1;
+}
+
+.character.left { left: 5%; transform: translateX(-20px); }
+.character.left.visible { transform: translateX(0); }
+
+.character.center { left: 50%; transform: translateX(-50%) translateY(20px); }
+.character.center.visible { transform: translateX(-50%) translateY(0); }
+
+.character.right { right: 5%; transform: translateX(20px); }
+.character.right.visible { transform: translateX(0); }
+
+/* Personagem inativo (não falando) escurece */
+.character.inactive {
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6)) brightness(0.55);
+}
+
+/* ============================================================
+   CAIXA DE DIÁLOGO
+   ============================================================ */
+#dialog-box {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(900px, 90%);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 28px 36px 32px;
+  z-index: 10;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#dialog-box.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+#speaker-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--accent);
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+#speaker-name:empty { display: none; }
+#speaker-name:empty + #dialog-text { padding-top: 4px; }
+
+#dialog-text {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.55;
+  font-weight: 400;
+  color: var(--text-primary);
+  min-height: 90px;
+  letter-spacing: 0.2px;
+}
+
+#dialog-text.narration {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 20px;
+}
+
+/* Indicador de "clique para continuar" */
+#continue-indicator {
+  position: absolute;
+  bottom: 16px;
+  right: 28px;
+  color: var(--accent);
+  font-size: 14px;
+  opacity: 0;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+#continue-indicator.visible { opacity: 1; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* ============================================================
+   ESCOLHAS
+   ============================================================ */
+#choices {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(720px, 88%);
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#choices.visible {
+  display: flex;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.choice-button {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-left: 3px solid var(--accent);
+  padding: 20px 28px;
+  font-family: var(--serif);
+  font-size: 19px;
+  color: var(--text-primary);
+  text-align: left;
+  line-height: 1.4;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.choice-button:hover {
+  background: rgba(30, 26, 38, 0.95);
+  border-left-color: var(--text-primary);
+  transform: translateX(4px);
+}
+
+.choice-button:active {
+  transform: translateX(2px);
+}
+
+/* ============================================================
+   INDICADOR DE TIPO DE VIOLÊNCIA (educativo)
+   ============================================================ */
+#violence-indicator {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: var(--warning);
+  border: 1px solid rgba(184, 93, 93, 0.4);
+  padding: 10px 16px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #e8b8b8;
+  animation: indicatorPulse 2.5s ease;
+}
+
+#violence-indicator.visible {
+  display: flex;
+}
+
+#violence-indicator::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--danger);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--danger);
+}
+
+@keyframes indicatorPulse {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ============================================================
+   HUD SUPERIOR
+   ============================================================ */
+#hud-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 25;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+  pointer-events: none;
+}
+
+#scene-label {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-muted);
+  letter-spacing: 1.2px;
+}
+
+#menu-controls {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.menu-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--panel-border);
+  background: rgba(20, 18, 26, 0.6);
+  color: var(--text-muted);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.menu-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+/* Controles de áudio */
+#audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 4px;
+  background: rgba(20, 18, 26, 0.6);
+  border: 1px solid var(--panel-border);
+  border-radius: 2px;
+  padding: 0 10px 0 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+#audio-controls .menu-btn {
+  border: none;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#mute-btn.muted {
+  color: var(--danger);
+  position: relative;
+}
+
+#volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 70px;
+  height: 3px;
+  background: rgba(220, 200, 180, 0.25);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+#volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+#volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+#volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+#volume-slider::-moz-range-track {
+  background: rgba(220, 200, 180, 0.25);
+  height: 3px;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  #volume-slider { width: 50px; }
+}
+
+/* ============================================================
+   TELA DE ABERTURA
+   ============================================================ */
+#title-screen, #end-screen, #summary-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-deep);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  background-image: radial-gradient(ellipse at top, rgba(201, 165, 92, 0.08), transparent 50%);
+}
+
+#title-screen.hidden, #end-screen.hidden, #summary-screen.hidden {
+  display: none;
+}
+
+.title-eyebrow {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.title-main {
+  font-family: var(--serif);
+  font-size: clamp(48px, 8vw, 88px);
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.title-sub {
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+  font-weight: 400;
+}
+
+.title-divider {
+  width: 60px;
+  height: 1px;
+  background: var(--accent);
+  margin: 32px auto;
+  opacity: 0.5;
+}
+
+.title-meta {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 20px;
+  margin-bottom: 48px;
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.primary-button {
+  font-family: var(--serif);
+  font-size: 18px;
+  padding: 14px 36px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--text-primary);
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+  min-width: 240px;
+}
+
+.primary-button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+
+.secondary-button {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  padding: 8px;
+  letter-spacing: 0.5px;
+}
+
+.secondary-button:hover { color: var(--text-primary); }
+
+.trigger-warning {
+  border: 1px solid rgba(184, 93, 93, 0.3);
+  background: rgba(184, 93, 93, 0.05);
+  padding: 20px 28px;
+  max-width: 560px;
+  margin: 32px auto 0;
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.trigger-warning strong {
+  color: #e8b8b8;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ============================================================
+   TELA DE RESUMO (final)
+   ============================================================ */
+#summary-screen {
+  overflow-y: auto;
+  padding: 60px 40px;
+  justify-content: flex-start;
+}
+
+.summary-header {
+  margin-bottom: 40px;
+}
+
+.summary-content {
+  max-width: 720px;
+  width: 100%;
+  text-align: left;
+}
+
+.summary-section {
+  border-left: 2px solid var(--accent);
+  padding-left: 20px;
+  margin-bottom: 28px;
+}
+
+.summary-scene-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.summary-choice {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.summary-tag {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #e8b8b8;
+  background: var(--warning);
+  border: 1px solid rgba(184, 93, 93, 0.3);
+  padding: 3px 10px;
+  margin-top: 8px;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+
+.summary-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+@media (max-width: 768px) {
+  #dialog-box {
+    padding: 20px 22px;
+    bottom: 2%;
+  }
+  #dialog-text { font-size: 18px; }
+  #speaker-name { font-size: 18px; }
+  .character { height: 65vh; }
+  .character.left { left: 0; }
+  .character.right { right: 0; }
+  .choice-button { font-size: 16px; padding: 16px 20px; }
+}
+
+/* ============================================================
+   TRANSIÇÕES DE CENA
+   ============================================================ */
+#scene-transition {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-deep);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#scene-transition.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#scene-transition-text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#scene-transition.active #scene-transition-text {
+  opacity: 1;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     TELA DE ABERTURA
+============================================================ -->
+<div id="title-screen">
+  <div class="title-eyebrow">Jogo Sério · Protótipo de Pesquisa</div>
+  <h1 class="title-main">Play na Consciência</h1>
+  <div class="title-sub">Modo 1 — Fragmentos</div>
+  <div class="title-divider"></div>
+  <p class="title-meta">
+    A história de Júlia, uma estudante universitária, e do começo de um relacionamento que se transforma. Seis cenas, escolhas que importam, e a consciência sobre o que muitas vezes passa despercebido.
+  </p>
+
+  <button class="primary-button" onclick="game.start()">Iniciar a história</button>
+  <button class="secondary-button" onclick="game.continue()" id="continue-btn" style="display:none;">Continuar de onde parei</button>
+
+  <div class="trigger-warning">
+    <strong>Aviso de Conteúdo</strong>
+    Esta experiência aborda situações de violência psicológica e patrimonial em relacionamentos afetivos. O conteúdo foi elaborado com finalidade educativa, em contexto de pesquisa acadêmica de mestrado. Se este tema afetar você pessoalmente, considere fazer a experiência em companhia de alguém de confiança, ou buscar apoio: <strong style="display:inline; color:var(--accent); letter-spacing:0;">Central de Atendimento à Mulher — disque 180</strong>.
+  </div>
+</div>
+
+<!-- ============================================================
+     PALCO PRINCIPAL
+============================================================ -->
+<div id="stage">
+  <div id="scene-frame">
+    <div id="background"></div>
+    <div id="vignette"></div>
+    <div id="characters"></div>
+
+    <div id="hud-top">
+      <div id="scene-label"></div>
+      <div id="menu-controls">
+        <div id="audio-controls">
+          <button class="menu-btn" id="mute-btn" onclick="game.toggleMute()" title="Silenciar música">♪</button>
+          <input type="range" id="volume-slider" min="0" max="100" value="35"
+                 oninput="game.setVolume(this.value)" title="Volume da música">
+        </div>
+        <button class="menu-btn" onclick="game.skipForward()" title="Pular adiante">›</button>
+        <button class="menu-btn" onclick="game.restart()" title="Reiniciar">↺</button>
+      </div>
+    </div>
+
+    <div id="violence-indicator">
+      <span id="violence-text"></span>
+    </div>
+
+    <div id="dialog-box">
+      <div id="speaker-name"></div>
+      <div id="dialog-text"></div>
+      <div id="continue-indicator">▽</div>
+    </div>
+
+    <div id="choices"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TRANSIÇÃO DE CENA
+============================================================ -->
+<div id="scene-transition">
+  <div id="scene-transition-text"></div>
+</div>
+
+<!-- ============================================================
+     TELA DE RESUMO FINAL
+============================================================ -->
+<div id="summary-screen" class="hidden">
+  <div class="summary-header">
+    <div class="title-eyebrow">Resumo da Experiência</div>
+    <h1 class="title-main" style="font-size: clamp(36px, 6vw, 56px);">Suas escolhas</h1>
+    <div class="title-divider"></div>
+    <p class="title-sub" style="margin-bottom: 32px;">Modo 1 — Fragmentos · História de Júlia</p>
+  </div>
+
+  <div class="summary-content" id="summary-content"></div>
+
+  <div class="summary-actions">
+    <button class="primary-button" onclick="game.restart()">Recomeçar</button>
+    <button class="secondary-button" onclick="window.print()">Imprimir resumo</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ROTEIRO COMPLETO — MODO 1 (JÚLIA)
+// Cada cena contém uma sequência de "blocos":
+//   { type: "dialog", speaker, text, sprite?, position?, bg?, violence? }
+//   { type: "choice", question?, options: [{text, label, violence?, next}] }
+//   { type: "narration", text }
+//   { type: "transition", text, nextScene }
+// ============================================================
+
+const SCRIPT = {
+  // ===== CENA 1: O ENCANTAMENTO =====
+  cena1: {
+    label: "Cena 1 — O encantamento",
+    bg: "assets/cena01_festa.png",
+    music: "assets/musica_festa.mp3",
+    blocks: [
+      {
+        type: "narration",
+        text: "Uma festa de calouros. Música alta, luzes coloridas, conversas se cruzando. Júlia chegou com Carla, mas em algum momento se viu sozinha perto do bar."
+      },
+      {
+        type: "narration",
+        text: "Foi então que ele apareceu — Leo, veterano, com aquele jeito tranquilo de quem já conhece o lugar e parece saber exatamente o que dizer."
+      },
+      {
+        speaker: "Leo",
+        text: "Eu te observei a noite toda. Calouras geralmente chegam aqui meio perdidas, mas você tem outra coisa. Você está, sei lá... presente. Posso te pagar uma água?",
+        sprite: "leo_charmoso",
+        position: "right"
+      },
+      {
+        speaker: "Júlia",
+        text: "Água? Mais simpático que pagar uma cerveja, com certeza.",
+        sprite: "julia_neutra",
+        position: "left",
+        secondary: { sprite: "leo_charmoso", position: "right" }
+      },
+      {
+        speaker: "Leo",
+        text: "Cerveja é fácil. Água é estratégia.",
+        sprite: "leo_charmoso",
+        position: "right",
+        secondary: { sprite: "julia_neutra", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Algumas semanas se passaram. Mensagens diárias. Cafés entre as aulas. Leo lembrava de tudo o que ela dizia — das matérias difíceis, do nome do seu gato, da banda que ela tinha mencionado de passagem."
+      },
+      {
+        type: "narration",
+        text: "Era quinta-feira à tarde. Júlia tinha combinado de estudar com Carla naquela noite — prova importante na sexta. Mandou uma mensagem para o Leo avisando."
+      },
+      {
+        speaker: "Leo",
+        text: "Ah, que pena, meu amor… Eu estava planejando um jantar surpresa especial só pra nós dois hoje à noite. Mas tudo bem, se seus estudos são mais importantes, a gente deixa…",
+        sprite: "leo_charmoso",
+        position: "right"
+      },
+      {
+        type: "choice",
+        question: "O que Júlia faz?",
+        options: [
+          {
+            text: "Manter o compromisso de estudo com Carla.",
+            label: "Manteve o compromisso",
+            next: "cena1_a"
+          },
+          {
+            text: "Cancelar com a amiga e aceitar o jantar surpresa.",
+            label: "Cedeu ao jantar",
+            violence: "Sinal de controle relacional",
+            next: "cena1_b"
+          }
+        ]
+      }
+    ]
+  },
+
+  cena1_a: {
+    inherit: "cena1",
+    blocks: [
+      {
+        speaker: "Júlia",
+        text: "Leo, eu sinto muito mesmo. Vamos remarcar pro fim de semana? Eu prometi pra Carla e a prova é cedo amanhã.",
+        sprite: "julia_neutra",
+        position: "left"
+      },
+      {
+        speaker: "Leo",
+        text: "Claro. Eu entendo. Vai bem na prova. (Visto às 22h47)",
+        sprite: "leo_charmoso",
+        position: "right",
+        secondary: { sprite: "julia_neutra", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Ele não respondeu mais naquela noite. Nem no dia seguinte. Júlia fez a prova com a sensação estranha de ter feito alguma coisa errada — mesmo sem ter feito nada de errado."
+      },
+      { type: "transition", text: "Algumas semanas depois...", nextScene: "cena2" }
+    ]
+  },
+
+  cena1_b: {
+    inherit: "cena1",
+    blocks: [
+      {
+        speaker: "Júlia",
+        text: "Não, não, tudo bem! A Carla entende. Que horas você quer que eu vá?",
+        sprite: "julia_neutra",
+        position: "left"
+      },
+      {
+        speaker: "Leo",
+        text: "Sabia que eu podia contar com você. Te busco às oito.",
+        sprite: "leo_charmoso",
+        position: "right",
+        secondary: { sprite: "julia_neutra", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Carla disse \"sem problema\" pelo WhatsApp, mas demorou quase um minuto para digitar. Júlia tentou não pensar nisso."
+      },
+      { type: "transition", text: "Algumas semanas depois...", nextScene: "cena2" }
+    ]
+  },
+
+  // ===== CENA 2: O PRIMEIRO ALERTA =====
+  cena2: {
+    label: "Cena 2 — O primeiro alerta",
+    bg: "assets/cena02_quarto_dia.png",
+    blocks: [
+      {
+        type: "narration",
+        text: "Sábado de manhã. Júlia mexia no celular, jogada na cama, quando achou uma foto antiga — viagem de família na praia, três anos atrás. Ela e a mãe, de biquíni, rindo do sol forte demais. Postou no Instagram com #tbt."
+      },
+      {
+        type: "narration",
+        text: "Doze minutos depois, o celular vibrou. Leo."
+      },
+      {
+        speaker: "Leo",
+        text: "Pra que postar foto assim? Não tem necessidade de um monte de gente ficar vendo seu corpo.",
+        sprite: "leo_irritado",
+        position: "right"
+      },
+      {
+        speaker: "Leo",
+        text: "Apaga isso agora. Não gosto que fiquem vendo o que é meu.",
+        sprite: "leo_irritado",
+        position: "right"
+      },
+      {
+        speaker: "Júlia",
+        text: "...",
+        sprite: "julia_preocupada",
+        position: "left",
+        secondary: { sprite: "leo_irritado", position: "right" }
+      },
+      {
+        type: "choice",
+        question: "O que Júlia faz?",
+        options: [
+          {
+            text: "Apagar a foto para evitar uma briga.",
+            label: "Apagou a foto",
+            violence: "Violência psicológica · controle de imagem",
+            next: "cena2_a"
+          },
+          {
+            text: "Defender seu direito sobre as próprias memórias.",
+            label: "Manteve a publicação",
+            next: "cena2_b"
+          }
+        ]
+      }
+    ]
+  },
+
+  cena2_a: {
+    inherit: "cena2",
+    blocks: [
+      {
+        type: "narration",
+        text: "Júlia abriu o app. O dedo dela passou por cima do botão de excluir três vezes antes de pressionar. A foto sumiu. Quarenta e sete curtidas, evaporadas em um toque."
+      },
+      {
+        speaker: "Júlia",
+        text: "Pronto. Apaguei.",
+        sprite: "julia_preocupada",
+        position: "left"
+      },
+      {
+        speaker: "Leo",
+        text: "Obrigado, amor. É porque eu te amo, sabe? Não quero que se exponham assim a você.",
+        sprite: "leo_charmoso",
+        position: "right",
+        secondary: { sprite: "julia_preocupada", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Júlia ficou olhando o teto. Tinha a sensação de ter perdido alguma coisa, mas não sabia exatamente o quê."
+      },
+      { type: "transition", text: "Algumas semanas depois...", nextScene: "cena3" }
+    ]
+  },
+
+  cena2_b: {
+    inherit: "cena2",
+    blocks: [
+      {
+        speaker: "Júlia",
+        text: "Leo, é uma foto antiga, com a minha mãe. Eu não vou apagar. E o meu corpo não é \"seu\".",
+        sprite: "julia_preocupada",
+        position: "left"
+      },
+      {
+        speaker: "Leo",
+        text: "Olha o jeito que você tá falando comigo. Eu só estou cuidando de você. Tá bom, faz o que quiser. Boa sorte com os comentários que você vai receber.",
+        sprite: "leo_irritado",
+        position: "right",
+        secondary: { sprite: "julia_preocupada", position: "left" },
+        violence: "Tentativa de manipulação por culpa"
+      },
+      {
+        type: "narration",
+        text: "Ele não respondeu mais naquele dia. Júlia manteve a foto, mas ficou checando o celular a cada cinco minutos."
+      },
+      { type: "transition", text: "Algumas semanas depois...", nextScene: "cena3" }
+    ]
+  },
+
+  // ===== CENA 3: A ESCALADA DO CONTROLE =====
+  cena3: {
+    label: "Cena 3 — A escalada do controle",
+    bg: "assets/cena03_exposicao.png",
+    music: "assets/musica_galeria.mp3",
+    blocks: [
+      {
+        type: "narration",
+        text: "A exposição de arte tinha sido ideia de Carla. Júlia mencionou en passant que tinha interesse, e Leo se autoconvidou \"pra fazer companhia\"."
+      },
+      {
+        speaker: "Carla",
+        text: "Olha esse contraste aqui. É absurdo. Ela trabalha com pigmento de terra de verdade, dá pra ver a textura.",
+        sprite: "carla",
+        position: "left"
+      },
+      {
+        speaker: "Leo",
+        text: "Mas é só uma mancha marrom, né? Sinceramente, qualquer criança faz isso. Vocês pagaram pra entrar nisso?",
+        sprite: "leo_irritado",
+        position: "right",
+        secondary: { sprite: "carla", position: "left" }
+      },
+      {
+        speaker: "Júlia",
+        text: "Leo, fala baixo. Tem outras pessoas aqui.",
+        sprite: "julia_preocupada",
+        position: "center"
+      },
+      {
+        speaker: "Leo",
+        text: "Eu não tô falando alto. Você tá sensível. Quando você fica com a Carla, você sempre fica assim.",
+        sprite: "leo_irritado",
+        position: "right",
+        secondary: { sprite: "julia_preocupada", position: "center" },
+        violence: "Inversão de culpa · gaslighting incipiente"
+      },
+      {
+        type: "narration",
+        text: "Carla olhou para Júlia. Depois para Leo. Depois para o relógio do celular."
+      },
+      {
+        speaker: "Carla",
+        text: "Acho que eu vou indo. Tenho que acordar cedo.",
+        sprite: "carla",
+        position: "left"
+      },
+      {
+        type: "choice",
+        question: "O que Júlia faz?",
+        options: [
+          {
+            text: "Pedir Carla pra ficar e confrontar Leo discretamente.",
+            label: "Confrontou o Leo",
+            next: "cena3_a"
+          },
+          {
+            text: "Ceder e sugerir que todos vão embora juntos.",
+            label: "Cedeu e foram embora",
+            violence: "Violência psicológica · isolamento da rede de apoio",
+            next: "cena3_b"
+          }
+        ]
+      }
+    ]
+  },
+
+  cena3_a: {
+    inherit: "cena3",
+    blocks: [
+      {
+        speaker: "Júlia",
+        text: "Carla, fica. Leo, posso falar com você um instante?",
+        sprite: "julia_preocupada",
+        position: "center"
+      },
+      {
+        type: "narration",
+        text: "Júlia puxou Leo para um canto da galeria, perto de uma instalação de som ambiente que mascarava as vozes."
+      },
+      {
+        speaker: "Júlia",
+        text: "O que você está fazendo? Eu queria ver essa exposição. A Carla também. Se você não está afim, tudo bem, mas para de tentar arruinar pra gente.",
+        sprite: "julia_preocupada",
+        position: "left"
+      },
+      {
+        speaker: "Leo",
+        text: "Caramba, Júlia. Eu vim aqui por você. Eu detesto esse tipo de coisa e ainda vim. E você fica do lado da Carla? Tá bom.",
+        sprite: "leo_irritado",
+        position: "right",
+        secondary: { sprite: "julia_preocupada", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Ele ficou em silêncio o resto da exposição. Não saiu, mas também não falou mais com ninguém. Carla apertou o braço de Júlia na hora de se despedir, como quem diz: estou aqui."
+      },
+      { type: "transition", text: "Uma semana depois — véspera da entrega do TCC.", nextScene: "cena4" }
+    ]
+  },
+
+  cena3_b: {
+    inherit: "cena3",
+    blocks: [
+      {
+        speaker: "Júlia",
+        text: "Espera, Carla. Acho que a gente também tá indo. Foi um dia longo.",
+        sprite: "julia_preocupada",
+        position: "center"
+      },
+      {
+        speaker: "Carla",
+        text: "...tá. Boa noite, Ju.",
+        sprite: "carla",
+        position: "left"
+      },
+      {
+        type: "narration",
+        text: "Carla saiu primeiro. Sozinha. No carro, no caminho de volta, Leo passou o trajeto inteiro falando sobre como a noite tinha sido \"chata por culpa da Carla\". Júlia olhava pela janela e contava postes de luz."
+      },
+      { type: "transition", text: "Uma semana depois — véspera da entrega do TCC.", nextScene: "cena4" }
+    ]
+  },
+
+  // ===== CENA 4: O PONTO DE RUPTURA (cinemática, sem escolha) =====
+  cena4: {
+    label: "Cena 4 — O ponto de ruptura",
+    bg: "assets/cena02_quarto_dia.png",
+    blocks: [
+      {
+        type: "narration",
+        text: "Faltavam dezesseis horas para a entrega do TCC. Júlia estava sentada na cama, notebook no colo, tentando fechar a última seção. Leo tinha chegado havia uma hora e estava de braços cruzados encostado na escrivaninha."
+      },
+      {
+        speaker: "Leo",
+        text: "Você prometeu que a gente ia jantar fora hoje.",
+        sprite: "leo_irritado",
+        position: "right"
+      },
+      {
+        speaker: "Júlia",
+        text: "Amor, eu te avisei ontem. É a entrega amanhã. Não dá. Sábado a gente faz qualquer coisa.",
+        sprite: "julia_preocupada",
+        position: "left",
+        secondary: { sprite: "leo_irritado", position: "right" }
+      },
+      {
+        speaker: "Leo",
+        text: "Sempre tem alguma coisa. Sempre tem alguma desculpa. Você não tem tempo pra mim faz semanas.",
+        sprite: "leo_irritado",
+        position: "right",
+        secondary: { sprite: "julia_preocupada", position: "left" }
+      },
+      {
+        speaker: "Júlia",
+        text: "Leo, é UMA noite. Eu tô tentando me formar.",
+        sprite: "julia_preocupada",
+        position: "left",
+        secondary: { sprite: "leo_irritado", position: "right" }
+      },
+      {
+        type: "narration",
+        text: "Foi rápido. Ele se levantou. Pegou o notebook. Pegou o notebook das mãos dela."
+      },
+      {
+        speaker: "Leo",
+        text: "VOCÊ AMA MAIS ESSA PORCARIA DO QUE A MIM!",
+        sprite: "leo_furia",
+        position: "right",
+        violence: "Violência patrimonial · destruição de bem essencial"
+      },
+      { type: "transition", text: "...", nextScene: "cena4_pos" }
+    ]
+  },
+
+  cena4_pos: {
+    inherit: "cena4",
+    bg: "assets/cena04_quarto_destruido.png",
+    blocks: [
+      {
+        type: "narration",
+        text: "O som do notebook contra o chão de madeira foi um som que ela não esqueceria mais. Plástico estalando. Tela rachando. Um pedaço pequeno deslizando até parar perto do tapete."
+      },
+      {
+        type: "narration",
+        text: "Leo saiu. Bateu a porta da frente. Júlia ficou parada na cama por um tempo que ela não conseguiu medir."
+      },
+      {
+        speaker: "Júlia",
+        text: "Meses. Eram meses de trabalho ali.",
+        sprite: "julia_chorando",
+        position: "center"
+      },
+      {
+        type: "narration",
+        text: "Ela se levantou. Ajoelhou perto do que restou do notebook. Tentou apertar o botão de ligar. Nada."
+      },
+      { type: "transition", text: "Sozinha. Tarde da noite. O celular na mão.", nextScene: "cena5" }
+    ]
+  },
+
+  // ===== CENA 5: O PEDIDO DE AJUDA (BIFURCAÇÃO) =====
+  cena5: {
+    label: "Cena 5 — O pedido de ajuda",
+    bg: "assets/cena05_quarto_fechado.png",
+    blocks: [
+      {
+        type: "narration",
+        text: "Júlia destravou o celular. A lista de contatos favoritos apareceu na tela. Ela podia ligar para alguém. Tinha que ligar para alguém."
+      },
+      {
+        speaker: "Júlia",
+        text: "Pra quem eu ligo? Pra quem eu ligo agora?",
+        sprite: "julia_chorando",
+        position: "center"
+      },
+      {
+        type: "choice",
+        question: "Quem Júlia procura?",
+        options: [
+          {
+            text: "Ligar para Carla, a amiga.",
+            label: "Ligou para Carla",
+            next: "cena5_carla"
+          },
+          {
+            text: "Ligar para Lúcia, a mãe.",
+            label: "Ligou para Lúcia",
+            next: "cena5_lucia"
+          }
+        ]
+      }
+    ]
+  },
+
+  cena5_carla: {
+    inherit: "cena5",
+    blocks: [
+      {
+        type: "narration",
+        text: "Ela tocou no nome de Carla. Dois toques."
+      },
+      {
+        speaker: "Carla",
+        text: "Ju? Que horas são... espera, você tá chorando? O que aconteceu?",
+        sprite: "carla",
+        position: "right"
+      },
+      {
+        speaker: "Júlia",
+        text: "Ele quebrou. Carla, ele quebrou o meu notebook. O TCC tá lá dentro. Tudo. Ele... ele só pegou e jogou. Eu não sei o que fazer.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "carla", position: "right" }
+      },
+      {
+        speaker: "Carla",
+        text: "Ju, escuta. Eu tô indo pra aí agora. Não abre a porta pra ele. Você tá ouvindo? Não abre a porta pra ele. Eu chego em vinte minutos.",
+        sprite: "carla",
+        position: "right",
+        secondary: { sprite: "julia_chorando", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Júlia desligou. Pela primeira vez em horas, sentiu que alguém estava do lado dela — completamente, sem dúvida, sem ressalva."
+      },
+      { type: "transition", text: "Na manhã seguinte. NAE da universidade.", nextScene: "cena6_carla" }
+    ],
+    setAlly: "carla"
+  },
+
+  cena5_lucia: {
+    inherit: "cena5",
+    blocks: [
+      {
+        type: "narration",
+        text: "Ela tocou no nome da mãe. Demorou cinco toques."
+      },
+      {
+        speaker: "Lúcia",
+        text: "Ju, filha? Tá tudo bem? Você nunca liga a essa hora.",
+        sprite: "lucia",
+        position: "right"
+      },
+      {
+        speaker: "Júlia",
+        text: "Mãe, o Leo... ele quebrou o meu notebook. Tava com o TCC todo lá. Ele jogou no chão na frente de mim.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "lucia", position: "right" }
+      },
+      {
+        speaker: "Lúcia",
+        text: "Meu Deus, filha. Mas vocês brigaram? Por quê? Ele faz isso sempre?",
+        sprite: "lucia",
+        position: "right",
+        secondary: { sprite: "julia_chorando", position: "left" }
+      },
+      {
+        speaker: "Lúcia",
+        text: "Olha, briga de namorado é uma coisa, sabe... mas escuta, todo casal passa por momentos difíceis. Seu pai e eu também tivemos as nossas crises. Você tem certeza que não pode conversar com ele com calma amanhã?",
+        sprite: "lucia",
+        position: "right",
+        secondary: { sprite: "julia_chorando", position: "left" },
+        violence: "Aliada falha · minimização da violência"
+      },
+      {
+        speaker: "Júlia",
+        text: "Mãe, ele DESTRUIU o meu computador. Não é briga.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "lucia", position: "right" }
+      },
+      {
+        speaker: "Lúcia",
+        text: "Eu sei, filha. Eu sei. Olha, amanhã eu pego um ônibus aí, tá? A gente conversa direito. Tenta dormir.",
+        sprite: "lucia",
+        position: "right",
+        secondary: { sprite: "julia_chorando", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Júlia desligou. Sentiu-se um pouco menos sozinha — mas só um pouco. A mãe viria. Ela sabia que a mãe viria. Mas sabia também que ela não tinha entendido."
+      },
+      { type: "transition", text: "Na manhã seguinte. NAE da universidade.", nextScene: "cena6_lucia" }
+    ],
+    setAlly: "lucia"
+  },
+
+  // ===== CENA 6: O PRIMEIRO PASSO OFICIAL =====
+  cena6_carla: {
+    label: "Cena 6 — O primeiro passo oficial",
+    bg: "assets/cena06_nae.png",
+    blocks: [
+      {
+        type: "narration",
+        text: "O Núcleo de Apoio ao Estudante ficava no segundo andar do prédio da reitoria. Carla insistiu em ir junto. Sentou-se ao lado de Júlia na sala de espera e segurou a mão dela até o nome ser chamado."
+      },
+      {
+        speaker: "Sofia",
+        text: "Júlia? Pode entrar. Pode entrar com sua acompanhante também, se você quiser.",
+        sprite: "sofia",
+        position: "right"
+      },
+      {
+        speaker: "Júlia",
+        text: "Quero. Quero, sim.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "sofia", position: "right" }
+      },
+      {
+        type: "narration",
+        text: "A sala era pequena, mas tinha luz natural. Sofia, a psicóloga, ofereceu água e indicou o sofá. Carla sentou ao lado de Júlia, deixando uma distância respeitosa mas presente."
+      },
+      {
+        speaker: "Sofia",
+        text: "Júlia, antes de qualquer coisa — você está em um lugar seguro aqui. Você pode me contar o que está sentindo no seu tempo. Não precisa ter pressa.",
+        sprite: "sofia",
+        position: "right"
+      },
+      {
+        speaker: "Carla",
+        text: "Ju, conta. Conta como aconteceu. Eu tô aqui.",
+        sprite: "carla",
+        position: "center",
+        secondary: { sprite: "sofia", position: "right" }
+      },
+      {
+        speaker: "Júlia",
+        text: "Eu acho que eu deixei muita coisa passar. Eu sabia que tinha alguma coisa errada. Eu... eu sabia.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "sofia", position: "right" }
+      },
+      {
+        speaker: "Sofia",
+        text: "Júlia, o que você está fazendo agora — estar aqui — já é um passo enorme. E você não está sozinha nele. Vamos com calma. Você quer começar contando como vocês se conheceram?",
+        sprite: "sofia",
+        position: "right",
+        secondary: { sprite: "julia_chorando", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Júlia respirou fundo. Olhou para Carla. Olhou para Sofia. Começou a contar do início — da festa, da água que não era cerveja, do jeito tranquilo de quem parecia saber exatamente o que dizer."
+      },
+      { type: "transition", text: "Fim do Modo 1 — Fragmentos", nextScene: "FIM" }
+    ]
+  },
+
+  cena6_lucia: {
+    label: "Cena 6 — O primeiro passo oficial",
+    bg: "assets/cena06_nae.png",
+    blocks: [
+      {
+        type: "narration",
+        text: "O Núcleo de Apoio ao Estudante ficava no segundo andar do prédio da reitoria. Lúcia tinha vindo de ônibus de manhã cedo. Ofereceu para acompanhar Júlia — \"se você fizer questão\". Sentou-se ao lado dela na sala de espera, mexendo nas alças da bolsa."
+      },
+      {
+        speaker: "Sofia",
+        text: "Júlia? Pode entrar. Pode entrar com sua acompanhante também, se você quiser.",
+        sprite: "sofia",
+        position: "right"
+      },
+      {
+        speaker: "Júlia",
+        text: "Pode vir, mãe.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "sofia", position: "right" }
+      },
+      {
+        type: "narration",
+        text: "A sala era pequena, mas tinha luz natural. Sofia, a psicóloga, ofereceu água e indicou o sofá. Lúcia sentou-se na ponta, como se não soubesse se devia estar ali."
+      },
+      {
+        speaker: "Sofia",
+        text: "Júlia, antes de qualquer coisa — você está em um lugar seguro aqui. Você pode me contar o que está sentindo no seu tempo. Não precisa ter pressa.",
+        sprite: "sofia",
+        position: "right"
+      },
+      {
+        speaker: "Lúcia",
+        text: "Doutora, com licença. Eu acho importante a senhora saber que o rapaz é uma boa pessoa. Eu já conheci ele. Eles tiveram uma briga, é verdade, mas...",
+        sprite: "lucia",
+        position: "center",
+        secondary: { sprite: "sofia", position: "right" },
+        violence: "Aliada falha · tentativa de relativização"
+      },
+      {
+        speaker: "Sofia",
+        text: "Senhora Lúcia, eu entendo. E agradeço a senhora ter vindo apoiar a Júlia. Mas aqui, agora, é o espaço dela. Vamos escutar o que ela tem para dizer primeiro, sim?",
+        sprite: "sofia",
+        position: "right",
+        secondary: { sprite: "lucia", position: "center" }
+      },
+      {
+        speaker: "Júlia",
+        text: "Mãe, deixa eu falar. Por favor.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "sofia", position: "right" }
+      },
+      {
+        speaker: "Júlia",
+        text: "Eu acho que eu deixei muita coisa passar. Eu sabia que tinha alguma coisa errada. Eu... eu sabia.",
+        sprite: "julia_chorando",
+        position: "left",
+        secondary: { sprite: "sofia", position: "right" }
+      },
+      {
+        speaker: "Sofia",
+        text: "Júlia, o que você está fazendo agora — estar aqui — já é um passo enorme. Vamos com calma. Você quer começar contando como vocês se conheceram?",
+        sprite: "sofia",
+        position: "right",
+        secondary: { sprite: "julia_chorando", position: "left" }
+      },
+      {
+        type: "narration",
+        text: "Júlia respirou fundo. Sentiu o silêncio desconfortável da mãe ao lado. Começou a contar do início — da festa, da água que não era cerveja, do jeito tranquilo de quem parecia saber exatamente o que dizer."
+      },
+      { type: "transition", text: "Fim do Modo 1 — Fragmentos", nextScene: "FIM" }
+    ]
+  }
+};
+
+// ============================================================
+// MOTOR DO JOGO
+// ============================================================
+
+const game = {
+  state: {
+    currentScene: null,
+    blockIndex: 0,
+    choices: [],
+    ally: null,
+  },
+
+  // Estado de áudio (não persiste no save — é configuração de sessão)
+  audio: {
+    current: null,        // elemento <audio> tocando agora
+    currentTrack: null,   // caminho da faixa atual
+    volume: 0.35,         // 0.0 a 1.0
+    muted: false,
+    fadeInterval: null,
+  },
+
+  // -----------------------------------------
+  // CICLO DE VIDA
+  // -----------------------------------------
+  init() {
+    // Detecta save anterior
+    try {
+      const saved = sessionStorage.getItem('play_consciencia_save');
+      if (saved) {
+        document.getElementById('continue-btn').style.display = 'inline-block';
+      }
+    } catch (e) {
+      // sessionStorage pode estar bloqueado — ignora silenciosamente
+    }
+  },
+
+  start() {
+    this.state = { currentScene: 'cena1', blockIndex: 0, choices: [], ally: null };
+    document.getElementById('title-screen').classList.add('hidden');
+    this.loadScene('cena1');
+  },
+
+  continue() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('play_consciencia_save'));
+      if (saved) {
+        this.state = saved;
+        document.getElementById('title-screen').classList.add('hidden');
+        this.loadScene(this.state.currentScene, this.state.blockIndex);
+      }
+    } catch (e) {
+      this.start();
+    }
+  },
+
+  save() {
+    try {
+      sessionStorage.setItem('play_consciencia_save', JSON.stringify(this.state));
+    } catch (e) { /* silent */ }
+  },
+
+  restart() {
+    try { sessionStorage.removeItem('play_consciencia_save'); } catch (e) {}
+    location.reload();
+  },
+
+  skipForward() {
+    // pula para o próximo bloco (útil para o orientador testar rápido)
+    this.advance();
+  },
+
+  // -----------------------------------------
+  // CARREGAMENTO DE CENA
+  // -----------------------------------------
+  loadScene(sceneId, startIndex = 0) {
+    const scene = SCRIPT[sceneId];
+    if (!scene) {
+      console.error("Cena não encontrada:", sceneId);
+      return;
+    }
+
+    this.state.currentScene = sceneId;
+    this.state.blockIndex = startIndex;
+
+    // Marca aliado se a cena define um
+    if (scene.setAlly) {
+      this.state.ally = scene.setAlly;
+    }
+
+    // Resolve background (pode estar na cena ou herdar)
+    const bg = scene.bg || (scene.inherit ? SCRIPT[scene.inherit].bg : null);
+    const label = scene.label || (scene.inherit ? SCRIPT[scene.inherit].label : '');
+
+    // Resolve música (pode estar na cena ou herdar da cena-pai)
+    const music = scene.music || (scene.inherit ? SCRIPT[scene.inherit].music : null) || null;
+
+    this.setBackground(bg);
+    document.getElementById('scene-label').textContent = label;
+    this.updateMusic(music);
+
+    this.save();
+    this.renderBlock();
+  },
+
+  // -----------------------------------------
+  // SISTEMA DE ÁUDIO
+  // -----------------------------------------
+  // Troca a música conforme a cena. Se a faixa for a mesma que já está
+  // tocando, não faz nada (continua sem reiniciar). Se for diferente
+  // (ou null), faz crossfade suave.
+  updateMusic(trackPath) {
+    // Mesma faixa já tocando? Não reinicia.
+    if (trackPath === this.audio.currentTrack) return;
+
+    const oldAudio = this.audio.current;
+
+    // Faz fade-out e remove a faixa antiga (se houver)
+    if (oldAudio) {
+      this.fadeOut(oldAudio, 800);
+    }
+
+    this.audio.currentTrack = trackPath;
+
+    // Cena de silêncio: só para a anterior
+    if (!trackPath) {
+      this.audio.current = null;
+      return;
+    }
+
+    // Cria nova faixa e faz fade-in
+    const newAudio = new Audio(trackPath);
+    newAudio.loop = true;
+    newAudio.volume = 0;
+    this.audio.current = newAudio;
+
+    const targetVol = this.audio.muted ? 0 : this.audio.volume;
+
+    const playPromise = newAudio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        this.fadeIn(newAudio, targetVol, 800);
+      }).catch(err => {
+        // Navegador bloqueou autoplay (antes da 1ª interação).
+        // Como o jogo começa com clique em "Iniciar", isso raramente
+        // ocorre; mas se ocorrer, a faixa fica pronta para tocar no
+        // próximo gesto do usuário.
+        console.warn('Autoplay bloqueado — música tocará após interação.', err);
+      });
+    }
+  },
+
+  fadeIn(audioEl, targetVol, duration) {
+    const steps = 20;
+    const stepTime = duration / steps;
+    const stepVol = targetVol / steps;
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      const v = Math.min(stepVol * currentStep, targetVol);
+      audioEl.volume = v;
+      if (currentStep >= steps) clearInterval(interval);
+    }, stepTime);
+  },
+
+  fadeOut(audioEl, duration) {
+    const startVol = audioEl.volume;
+    const steps = 20;
+    const stepTime = duration / steps;
+    const stepVol = startVol / steps;
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      const v = Math.max(startVol - stepVol * currentStep, 0);
+      audioEl.volume = v;
+      if (currentStep >= steps) {
+        clearInterval(interval);
+        audioEl.pause();
+        audioEl.src = '';
+      }
+    }, stepTime);
+  },
+
+  setVolume(percent) {
+    this.audio.volume = percent / 100;
+    // Se mexeu no volume e estava mutado, desmuta
+    if (this.audio.muted && this.audio.volume > 0) {
+      this.audio.muted = false;
+      document.getElementById('mute-btn').classList.remove('muted');
+      document.getElementById('mute-btn').textContent = '♪';
+    }
+    if (this.audio.current) {
+      this.audio.current.volume = this.audio.muted ? 0 : this.audio.volume;
+    }
+  },
+
+  toggleMute() {
+    this.audio.muted = !this.audio.muted;
+    const btn = document.getElementById('mute-btn');
+
+    if (this.audio.muted) {
+      btn.classList.add('muted');
+      btn.textContent = '✕';
+      if (this.audio.current) this.audio.current.volume = 0;
+    } else {
+      btn.classList.remove('muted');
+      btn.textContent = '♪';
+      if (this.audio.current) this.audio.current.volume = this.audio.volume;
+    }
+  },
+
+  stopMusic() {
+    if (this.audio.current) {
+      this.fadeOut(this.audio.current, 600);
+      this.audio.current = null;
+      this.audio.currentTrack = null;
+    }
+  },
+
+  // -----------------------------------------
+  // RENDERIZAÇÃO DE BLOCO
+  // -----------------------------------------
+  renderBlock() {
+    const scene = SCRIPT[this.state.currentScene];
+    const block = scene.blocks[this.state.blockIndex];
+
+    if (!block) {
+      console.warn("Fim dos blocos da cena", this.state.currentScene);
+      return;
+    }
+
+    // Esconde escolhas
+    document.getElementById('choices').classList.remove('visible');
+
+    switch (block.type) {
+      case 'choice':
+        this.renderChoice(block);
+        break;
+      case 'transition':
+        this.renderTransition(block);
+        break;
+      case 'narration':
+        this.renderDialog({
+          speaker: null,
+          text: block.text,
+          narration: true
+        });
+        break;
+      default:
+        // dialog (default quando há speaker)
+        this.renderDialog(block);
+    }
+
+    // Mostra indicador de violência se houver
+    if (block.violence) {
+      this.showViolenceIndicator(block.violence);
+    }
+
+    this.save();
+  },
+
+  renderDialog(block) {
+    const dialogBox = document.getElementById('dialog-box');
+    const speakerEl = document.getElementById('speaker-name');
+    const textEl = document.getElementById('dialog-text');
+    const continueEl = document.getElementById('continue-indicator');
+
+    // Personagens (sprite primário + secundário)
+    this.setCharacters(block);
+
+    // Fala vs narração
+    if (block.narration) {
+      speakerEl.textContent = '';
+      textEl.className = 'narration';
+    } else {
+      speakerEl.textContent = block.speaker || '';
+      textEl.className = '';
+    }
+
+    textEl.textContent = block.text || '';
+
+    dialogBox.classList.add('visible');
+    continueEl.classList.add('visible');
+  },
+
+  renderChoice(block) {
+    const choicesEl = document.getElementById('choices');
+    const dialogBox = document.getElementById('dialog-box');
+
+    dialogBox.classList.remove('visible');
+    document.getElementById('continue-indicator').classList.remove('visible');
+
+    choicesEl.innerHTML = '';
+
+    if (block.question) {
+      const q = document.createElement('div');
+      q.style.cssText = 'font-family: var(--serif); font-size: 18px; font-style: italic; color: var(--text-muted); text-align: center; margin-bottom: 12px; letter-spacing: 1px;';
+      q.textContent = block.question;
+      choicesEl.appendChild(q);
+    }
+
+    block.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-button';
+      btn.textContent = opt.text;
+      btn.style.animationDelay = `${i * 100}ms`;
+      btn.onclick = () => this.makeChoice(opt);
+      choicesEl.appendChild(btn);
+    });
+
+    choicesEl.classList.add('visible');
+  },
+
+  renderTransition(block) {
+    const transEl = document.getElementById('scene-transition');
+    const textEl = document.getElementById('scene-transition-text');
+
+    textEl.textContent = block.text || '';
+    transEl.classList.add('active');
+
+    // Esconde caixa de diálogo durante transição
+    document.getElementById('dialog-box').classList.remove('visible');
+    document.getElementById('continue-indicator').classList.remove('visible');
+    this.clearCharacters();
+
+    setTimeout(() => {
+      if (block.nextScene === 'FIM') {
+        this.showSummary();
+      } else {
+        this.loadScene(block.nextScene);
+        setTimeout(() => {
+          transEl.classList.remove('active');
+        }, 200);
+      }
+    }, 2200);
+  },
+
+  // -----------------------------------------
+  // PERSONAGENS E CENÁRIO
+  // -----------------------------------------
+  setBackground(bgPath) {
+    if (!bgPath) return;
+    const bg = document.getElementById('background');
+    bg.classList.add('fade-out');
+    setTimeout(() => {
+      bg.style.backgroundImage = `url('${bgPath}')`;
+      bg.classList.remove('fade-out');
+    }, 400);
+  },
+
+  setCharacters(block) {
+    const container = document.getElementById('characters');
+    container.innerHTML = '';
+
+    if (!block.sprite) return;
+
+    // Sprite primário (quem está falando — destacado)
+    const primary = this.createCharacter(block.sprite, block.position || 'center', false);
+    container.appendChild(primary);
+
+    // Sprite secundário (acompanhante na cena — escurecido)
+    if (block.secondary) {
+      const secondary = this.createCharacter(block.secondary.sprite, block.secondary.position, true);
+      container.appendChild(secondary);
+    }
+
+    // Anima entrada
+    requestAnimationFrame(() => {
+      container.querySelectorAll('.character').forEach(c => c.classList.add('visible'));
+    });
+  },
+
+  createCharacter(spriteName, position, isInactive) {
+    const img = document.createElement('img');
+    img.src = `assets/${spriteName}.png`;
+    img.className = `character ${position}${isInactive ? ' inactive' : ''}`;
+    img.alt = spriteName;
+    return img;
+  },
+
+  clearCharacters() {
+    document.getElementById('characters').innerHTML = '';
+  },
+
+  // -----------------------------------------
+  // INDICADOR DE VIOLÊNCIA
+  // -----------------------------------------
+  showViolenceIndicator(text) {
+    const indicator = document.getElementById('violence-indicator');
+    const textEl = document.getElementById('violence-text');
+    textEl.textContent = text;
+
+    // Reinicia animação
+    indicator.classList.remove('visible');
+    void indicator.offsetWidth;
+    indicator.classList.add('visible');
+
+    setTimeout(() => {
+      indicator.classList.remove('visible');
+    }, 4500);
+  },
+
+  // -----------------------------------------
+  // ESCOLHAS
+  // -----------------------------------------
+  makeChoice(option) {
+    // Registra escolha
+    const scene = SCRIPT[this.state.currentScene];
+    this.state.choices.push({
+      scene: this.state.currentScene,
+      sceneLabel: scene.label || '',
+      choice: option.label,
+      violence: option.violence || null
+    });
+
+    // Mostra indicador se houver
+    if (option.violence) {
+      this.showViolenceIndicator(option.violence);
+    }
+
+    // Carrega próxima cena
+    this.loadScene(option.next);
+  },
+
+  // -----------------------------------------
+  // AVANÇAR DIÁLOGO (clique)
+  // -----------------------------------------
+  advance() {
+    const scene = SCRIPT[this.state.currentScene];
+    const block = scene.blocks[this.state.blockIndex];
+
+    // Bloqueia se for choice (precisa clicar no botão)
+    if (block && block.type === 'choice') return;
+
+    this.state.blockIndex++;
+
+    if (this.state.blockIndex >= scene.blocks.length) {
+      // Fim da cena sem transição explícita — não deve ocorrer no roteiro atual
+      return;
+    }
+
+    this.renderBlock();
+  },
+
+  // -----------------------------------------
+  // RESUMO FINAL
+  // -----------------------------------------
+  showSummary() {
+    const summaryEl = document.getElementById('summary-screen');
+    const contentEl = document.getElementById('summary-content');
+
+    // Para a música ao encerrar
+    this.stopMusic();
+
+    // Esconde palco
+    document.getElementById('stage').style.display = 'none';
+    document.getElementById('scene-transition').classList.remove('active');
+
+    let html = '';
+
+    // Agrupa por cena
+    const grouped = {};
+    this.state.choices.forEach(c => {
+      const key = c.sceneLabel || c.scene;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(c);
+    });
+
+    Object.keys(grouped).forEach(sceneLabel => {
+      html += '<div class="summary-section">';
+      html += `<div class="summary-scene-title">${sceneLabel}</div>`;
+      grouped[sceneLabel].forEach(c => {
+        html += `<div class="summary-choice">› ${c.choice}</div>`;
+        if (c.violence) {
+          html += `<span class="summary-tag">${c.violence}</span>`;
+        }
+      });
+      html += '</div>';
+    });
+
+    // Aliado
+    if (this.state.ally) {
+      const allyName = this.state.ally === 'carla' ? 'Carla (amiga)' : 'Lúcia (mãe)';
+      const allyType = this.state.ally === 'carla'
+        ? 'Aliada eficaz — apoio direto e validação emocional.'
+        : 'Aliada falha — boas intenções, mas dificuldade em reconhecer a gravidade da situação.';
+      html += `<div class="summary-section" style="border-left-color: var(--accent); background: rgba(201, 165, 92, 0.04); padding: 16px 20px; margin-top: 32px;">`;
+      html += `<div class="summary-scene-title">Aliada escolhida para o Modo 2</div>`;
+      html += `<div class="summary-choice"><strong>${allyName}</strong></div>`;
+      html += `<div style="font-family: var(--sans); font-size: 14px; color: var(--text-muted); margin-top: 6px; font-style: italic;">${allyType}</div>`;
+      html += `</div>`;
+    }
+
+    // Nota final pedagógica
+    html += `
+      <div class="summary-section" style="border-left-color: var(--text-muted); margin-top: 32px;">
+        <div class="summary-scene-title" style="color: var(--text-muted);">Sobre esta experiência</div>
+        <div style="font-family: var(--serif); font-size: 16px; color: var(--text-primary); line-height: 1.6; font-style: italic;">
+          Cada escolha que você fez ao longo da história de Júlia ilustra como a violência psicológica e patrimonial pode se instalar gradualmente em um relacionamento — começando com pequenos sinais facilmente racionalizados. Reconhecer esses padrões é o primeiro passo para interromper ciclos de violência, seja na própria vida ou na vida de alguém próximo.
+        </div>
+      </div>
+    `;
+
+    contentEl.innerHTML = html;
+    summaryEl.classList.remove('hidden');
+  }
+};
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+
+document.addEventListener('click', (e) => {
+  // Não avança se clicou em botão ou na tela de título/resumo
+  if (e.target.closest('button')) return;
+  if (e.target.closest('#title-screen')) return;
+  if (e.target.closest('#summary-screen')) return;
+  if (e.target.closest('#choices')) return;
+
+  // Só avança se o jogo está rodando
+  if (document.getElementById('title-screen').classList.contains('hidden')
+      && document.getElementById('summary-screen').classList.contains('hidden')) {
+    game.advance();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    if (document.getElementById('title-screen').classList.contains('hidden')
+        && document.getElementById('summary-screen').classList.contains('hidden')) {
+      game.advance();
+    }
+  }
+});
+
+// Inicializa
+game.init();
+</script>
+
+</body>
+</html>
