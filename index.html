@@ -705,9 +705,21 @@ button {
 }
 
 @media print {
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+  }
   #summary-screen {
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 20px !important;
     background: white !important;
     color: black !important;
+  }
+  #stage, #title-screen, #scene-transition {
+    display: none !important;
   }
   .summary-scene-title { color: #8a6020 !important; }
   .summary-choice { color: black !important; }
@@ -718,6 +730,9 @@ button {
   }
   .summary-violence-explanation { color: #4a2020 !important; }
   .summary-actions { display: none !important; }
+}
+@page {
+  margin: 20mm 18mm;
 }
 
 </style>
