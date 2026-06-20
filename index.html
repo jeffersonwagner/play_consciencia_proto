@@ -260,42 +260,61 @@ button {
 #violence-indicator {
   position: absolute;
   top: 50%;
-  right: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   z-index: 30;
   display: none;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
-  background: var(--warning);
-  border: 1px solid rgba(184, 93, 93, 0.4);
-  padding: 10px 16px;
+  background: rgba(40, 18, 22, 0.96);
+  border: 1px solid rgba(184, 93, 93, 0.6);
+  padding: 16px 22px;
   border-radius: 2px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
+  max-width: 480px;
+  width: max-content;
   color: #e8b8b8;
-  animation: indicatorPulse 2.5s ease;
+  animation: indicatorPulse 6s ease;
 }
 
 #violence-indicator.visible {
   display: flex;
 }
 
-#violence-indicator::before {
-  content: "";
+.violence-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.violence-dot {
   width: 8px;
   height: 8px;
   background: var(--danger);
   border-radius: 50%;
   box-shadow: 0 0 8px var(--danger);
+  flex-shrink: 0;
+}
+
+#violence-explanation {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.5;
+  color: #f0d8d8;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 @keyframes indicatorPulse {
   0% { opacity: 0; transform: translate(-50%, calc(-50% - 10px)); }
-  10% { opacity: 1; transform: translate(-50%, -50%); }
-  90% { opacity: 1; transform: translate(-50%, -50%);}
-  100% { opacity: 0; transform: translate(-50%, -50%);}
+  6% { opacity: 1; transform: translate(-50%, -50%); }
+  94% { opacity: 1; transform: translate(-50%, -50%); }
+  100% { opacity: 0; transform: translate(-50%, -50%); }
 }
 
 /* ============================================================
@@ -705,7 +724,11 @@ button {
     </div>
 
     <div id="violence-indicator">
-      <span id="violence-text"></span>
+      <div class="violence-header">
+        <span class="violence-dot"></span>
+        <span id="violence-text"></span>
+      </div>
+      <div id="violence-explanation"></div>
     </div>
 
     <div id="dialog-box">
@@ -816,6 +839,7 @@ const SCRIPT = {
             text: "Cancelar com a amiga e aceitar o jantar surpresa.",
             label: "Cedeu ao jantar",
             violence: "Sinal de controle relacional",
+            violenceExplanation: "Pequenos pedidos que parecem afeto, mas exigem que ela abra mão de outras pessoas e compromissos. É o início da centralização da vida dela em torno dele.",
             next: "cena1_b"
           }
         ]
@@ -911,6 +935,7 @@ const SCRIPT = {
             text: "Apagar a foto para evitar uma briga.",
             label: "Apagou a foto",
             violence: "Violência psicológica · controle de imagem",
+            violenceExplanation: "Ele decide o que ela pode ou não compartilhar sobre o próprio corpo e história, tratando-a como propriedade.",
             next: "cena2_a"
           },
           {
@@ -966,7 +991,8 @@ const SCRIPT = {
         sprite: "leo_irritado",
         position: "right",
         secondary: { sprite: "julia_preocupada", position: "left" },
-        violence: "Tentativa de manipulação por culpa"
+        violence: "Tentativa de manipulação por culpa",
+        violenceExplanation: "Ele transforma um pedido próprio em \"cuidado\", e a recusa dela em ingratidão. Quem se impõe, vira o errado."
       },
       {
         type: "narration",
@@ -1011,7 +1037,8 @@ const SCRIPT = {
         sprite: "leo_irritado",
         position: "right",
         secondary: { sprite: "julia_preocupada", position: "center" },
-        violence: "Inversão de culpa · gaslighting incipiente"
+        violence: "Inversão de culpa · gaslighting incipiente",
+        violenceExplanation: "Ele faz algo agressivo e em seguida acusa ela de estar \"sensível\" ou exagerando. O comportamento dele vira culpa dela."
       },
       {
         type: "narration",
@@ -1036,6 +1063,7 @@ const SCRIPT = {
             text: "Ceder e sugerir que todos vão embora juntos.",
             label: "Cedeu e foram embora",
             violence: "Violência psicológica · isolamento da rede de apoio",
+            violenceExplanation: "Ceder ao desconforto que ele cria perto de amigos enfraquece esses laços. Com o tempo, sobra só ele.",
             next: "cena3_b"
           }
         ]
@@ -1145,7 +1173,8 @@ const SCRIPT = {
         text: "VOCÊ AMA MAIS ESSA PORCARIA DO QUE A MIM!",
         sprite: "leo_furia",
         position: "right",
-        violence: "Violência patrimonial · destruição de bem essencial"
+        violence: "Violência patrimonial · destruição de bem essencial",
+        violenceExplanation: "Destruir algo que pertence a ela — sobretudo um instrumento de autonomia, como o notebook do TCC — é violência reconhecida em lei (Lei Maria da Penha, art. 7º, IV)."
       },
       { type: "transition", text: "...", nextScene: "cena4_pos" }
     ]
@@ -1280,7 +1309,8 @@ const SCRIPT = {
         sprite: "lucia",
         position: "right",
         secondary: { sprite: "julia_chorando", position: "left" },
-        violence: "Aliada falha · minimização da violência"
+        violence: "Aliada falha · minimização da violência",
+        violenceExplanation: "Quando alguém próximo trata a violência como \"briga normal de casal\", a vítima perde validação e tende a duvidar da própria percepção."
       },
       {
         speaker: "Júlia",
@@ -1403,7 +1433,8 @@ const SCRIPT = {
         sprite: "lucia",
         position: "center",
         secondary: { sprite: "sofia", position: "right" },
-        violence: "Aliada falha · tentativa de relativização"
+        violence: "Aliada falha · tentativa de relativização",
+        violenceExplanation: "Defender o agressor diante de um profissional desloca o foco do que aconteceu para uma imagem idealizada do relacionamento, desautorizando a fala da vítima."
       },
       {
         speaker: "Sofia",
@@ -1698,7 +1729,7 @@ const game = {
 
     // Mostra indicador de violência se houver
     if (block.violence) {
-      this.showViolenceIndicator(block.violence);
+      this.showViolenceIndicator(block.violence, block.violenceExplanation);
     }
 
     this.save();
@@ -1830,19 +1861,20 @@ const game = {
   // -----------------------------------------
   // INDICADOR DE VIOLÊNCIA
   // -----------------------------------------
-  showViolenceIndicator(text) {
+  showViolenceIndicator(text, explanation) {
     const indicator = document.getElementById('violence-indicator');
     const textEl = document.getElementById('violence-text');
+    const explEl = document.getElementById('violence-explanation');
     textEl.textContent = text;
+    explEl.textContent = explanation || '';
 
-    // Reinicia animação
     indicator.classList.remove('visible');
     void indicator.offsetWidth;
     indicator.classList.add('visible');
 
     setTimeout(() => {
       indicator.classList.remove('visible');
-    }, 4500);
+    }, 6000);
   },
 
   // -----------------------------------------
@@ -1860,7 +1892,7 @@ const game = {
 
     // Mostra indicador se houver
     if (option.violence) {
-      this.showViolenceIndicator(option.violence);
+      this.showViolenceIndicator(option.violence, option.violenceExplanation);
     }
 
     // Carrega próxima cena
