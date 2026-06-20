@@ -618,6 +618,22 @@ button {
   border-radius: 2px;
 }
 
+.summary-violence-block {
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.summary-violence-explanation {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #d8b8b8;
+  margin-top: 8px;
+  padding-left: 2px;
+  max-width: 620px;
+}
+
 .summary-actions {
   display: flex;
   gap: 12px;
@@ -676,6 +692,23 @@ button {
 #scene-transition.active #scene-transition-text {
   opacity: 1;
 }
+
+@media print {
+  #summary-screen {
+    background: white !important;
+    color: black !important;
+  }
+  .summary-scene-title { color: #8a6020 !important; }
+  .summary-choice { color: black !important; }
+  .summary-tag {
+    background: #f5e0e0 !important;
+    color: #6a2020 !important;
+    border-color: #c08080 !important;
+  }
+  .summary-violence-explanation { color: #4a2020 !important; }
+  .summary-actions { display: none !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1887,7 +1920,8 @@ const game = {
       scene: this.state.currentScene,
       sceneLabel: scene.label || '',
       choice: option.label,
-      violence: option.violence || null
+      violence: option.violence || null,
+      violenceExplanation: option.violenceExplanation || null
     });
 
     // Mostra indicador se houver
@@ -1949,7 +1983,12 @@ const game = {
       grouped[sceneLabel].forEach(c => {
         html += `<div class="summary-choice">› ${c.choice}</div>`;
         if (c.violence) {
+          html += `<div class="summary-violence-block">`;
           html += `<span class="summary-tag">${c.violence}</span>`;
+          if (c.violenceExplanation) {
+            html += `<div class="summary-violence-explanation">${c.violenceExplanation}</div>`;
+          }
+          html += `</div>`;
         }
       });
       html += '</div>';
