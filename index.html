@@ -259,8 +259,9 @@ button {
    ============================================================ */
 #violence-indicator {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 50%;
+  right: 50%;
+  transform: translate(-50%, -50%);
   z-index: 30;
   display: none;
   align-items: center;
@@ -291,10 +292,10 @@ button {
 }
 
 @keyframes indicatorPulse {
-  0% { opacity: 0; transform: translateY(-10px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
+  0% { opacity: 0; transform: translate(-50%, calc(-50% - 10px)); }
+  10% { opacity: 1; transform: translate(-50%, -50%); }
+  90% { opacity: 1; transform: translate(-50%, -50%);}
+  100% { opacity: 0; transform: translate(-50%, -50%);}
 }
 
 /* ============================================================
