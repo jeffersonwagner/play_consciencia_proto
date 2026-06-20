@@ -1763,9 +1763,37 @@ const game = {
     // Mostra indicador de violência se houver
     if (block.violence) {
       this.showViolenceIndicator(block.violence, block.violenceExplanation);
+
+      // Registra no histórico para aparecer no resumo final
+      // Evita duplicatas: só registra se ainda não tiver sido registrado
+      const scene = SCRIPT[this.state.currentScene];
+      const sceneLabel = scene.label || (scene.inherit ? SCRIPT[scene.inherit].label : '') || this.state.currentScene;
+      const alreadyLogged = this.state.choices.some(c =>
+        c.scene === this.state.currentScene &&
+        c.violence === block.violence &&
+        c.isNarrative === true
+      );
+      if (!alreadyLogged) {
+        this.state.choices.push({
+          scene: this.state.currentScene,
+          sceneLabel: sceneLabel,
+          choice: this.describeBlockEvent(block),
+          violence: block.violence,
+          violenceExplanation: block.violenceExplanation || null,
+          isNarrative: true
+        });
+      }
     }
 
     this.save();
+  },
+
+  describeBlockEvent(block) {
+    // Gera uma descrição curta do evento narrativo para o resumo
+    if (block.speaker) {
+      return `${block.speaker} (fala marcada por violência)`;
+    }
+    return '(momento narrativo)';
   },
 
   renderDialog(block) {
