@@ -47,6 +47,8 @@ describe('período da coleta', () => {
     expect(parseConfig({ ativa: 'SIM', inicio: '2026-12-01', fim: '2026-12-15', modos: '1, 2,3', protagonista: 'julia' }))
       .toMatchObject({ ativa: true, modos: [1, 2, 3], ciclo: 1 });
     expect(parseConfig({ ativa: 'SIM', inicio: '2026-12-01', fim: '2026-12-15', ciclo: '2' })).toMatchObject({ ciclo: 2, modos: [1, 2] });
+    // Planilha em pt-BR pode transformar "1,2,3" em número com ponto
+    expect(parseConfig({ ativa: 'SIM', inicio: '2026-12-01', fim: '2026-12-15', modos: '1.2.3' })?.modos).toEqual([1, 2, 3]);
     expect(parseConfig({ ativa: 'NÃO', inicio: '2026-12-01', fim: '2026-12-15' })?.ativa).toBe(false);
     expect(parseConfig({ ativa: 'SIM', inicio: '', fim: '' })).toBeNull();
   });

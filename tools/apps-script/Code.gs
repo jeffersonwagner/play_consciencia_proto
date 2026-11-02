@@ -43,11 +43,13 @@ function configurar() {
   var config = ss.getSheetByName(ABAS.config);
   if (!config) {
     config = ss.insertSheet(ABAS.config, 0);
+    var chaves = CONFIG_PADRAO.map(function (l) { return l[0]; });
+    // "1,2" em planilha pt-BR vira o número 1,2: a célula de modos fica como texto
+    config.getRange(chaves.indexOf('modos') + 1, 2).setNumberFormat('@');
     config.getRange(1, 1, CONFIG_PADRAO.length, 3).setValues(CONFIG_PADRAO);
     config.getRange(2, 2).setValue('NÃO');
     var token = Utilities.getUuid().replace(/-/g, '').slice(0, 20);
-    var linhaToken = CONFIG_PADRAO.map(function (l) { return l[0]; }).indexOf('token') + 1;
-    config.getRange(linhaToken, 2).setValue(token);
+    config.getRange(chaves.indexOf('token') + 1, 2).setValue(token);
     config.setFrozenRows(1);
     config.autoResizeColumns(1, 3);
   }
@@ -59,7 +61,13 @@ function configurar() {
       aba.setFrozenRows(1);
     }
   });
-  SpreadsheetApp.getUi().alert('Planilha preparada. Preencha a aba Config (ativa, início, fim) e copie o token para o jogo.');
+  var aviso = 'Planilha preparada. Preencha a aba Config (ativa, início, fim) e copie o token para o jogo.';
+  // O alerta só aparece com a planilha aberta; executado pelo editor, vai para o registro
+  try {
+    SpreadsheetApp.getUi().alert(aviso);
+  } catch (err) {
+    Logger.log(aviso);
+  }
 }
 
 // ------------------------------------------------------------
@@ -85,7 +93,8 @@ function configPublica(cfg) {
     inicio: String(cfg.inicio || ''),
     fim: String(cfg.fim || ''),
     ciclo: Number(cfg.ciclo) === 2 ? 2 : 1,
-    modos: String(cfg.modos || '1,2'),
+    // Se a planilha converteu "1,2" em número, volta a separar os modos
+    modos: String(cfg.modos || '1,2').replace(/\./g, ','),
     protagonista: String(cfg.protagonista || 'julia'),
     mensagem: String(cfg.mensagem || ''),
   };

@@ -52,7 +52,7 @@ export function collectionStatus(config: CollectionConfig | null, now = new Date
 export function parseConfig(raw: unknown): CollectionConfig | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
-  const modos = String(r.modos ?? '1,2').split(/[,; ]+/).map(Number).filter(n => n >= 1 && n <= 4);
+  const modos = String(r.modos ?? '1,2').split(/[^\d]+/).map(Number).filter(n => n >= 1 && n <= 4);
   const config: CollectionConfig = {
     ativa: r.ativa === true || /^(sim|true|1)$/i.test(String(r.ativa ?? '')),
     inicio: String(r.inicio ?? ''),
