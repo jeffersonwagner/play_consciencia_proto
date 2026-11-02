@@ -1,0 +1,30 @@
+@media print {
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  #summary-screen {
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 20px !important;
+    background: white !important;
+    color: black !important;
+  }
+  #stage, #hub-screen, #scene-transition, #safety-bar {
+    display: none !important;
+  }
+  .summary-scene-title { color: #8a6020 !important; }
+  .summary-choice { color: black !important; }
+  .summary-tag {
+    background: #f5e0e0 !important;
+    color: #6a2020 !important;
+    border-color: #c08080 !important;
+  }
+  .summary-violence-explanation { color: #4a2020 !important; }
+  .summary-actions { display: none !important; }
+}
+@page {
+  margin: 20mm 18mm;
+}

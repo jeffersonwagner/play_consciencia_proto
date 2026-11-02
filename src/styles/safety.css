@@ -1,0 +1,43 @@
+/* Barra de segurança: saída rápida + Ligue 180, em todas as telas. */
+#safety-bar {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+}
+
+.safety-exit {
+  padding: 7px 12px;
+  background: rgba(184, 93, 93, 0.85);
+  color: #fff;
+  border-radius: 2px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  transition: background 0.2s ease;
+}
+
+.safety-exit:hover { background: var(--danger); }
+
+.safety-helpline {
+  color: var(--accent);
+  text-decoration: none;
+  padding: 6px 10px;
+  border: 1px solid var(--panel-border);
+  background: rgba(20, 18, 26, 0.6);
+  border-radius: 2px;
+  letter-spacing: 0.4px;
+}
+
+.safety-helpline:hover { border-color: var(--accent); }
+
+/* O HUD do palco começa depois da barra de segurança */
+#hud-top { padding-top: 56px; }
+
+@media (min-width: 769px) {
+  #hud-top { padding-top: 16px; padding-left: 230px; }
+}

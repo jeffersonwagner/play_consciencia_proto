@@ -1,0 +1,38 @@
+/* Paleta, tipografia e reset — compartilhados por todos os modos. */
+/* ============================================================
+   PALETA E TIPOGRAFIA
+   ============================================================ */
+:root {
+  --bg-deep: #0d0c10;
+  --bg-soft: #1a1820;
+  --panel: rgba(20, 18, 26, 0.92);
+  --panel-border: rgba(220, 200, 180, 0.18);
+  --text-primary: #f0ebe2;
+  --text-muted: #a89e90;
+  --accent: #c9a55c;
+  --accent-soft: rgba(201, 165, 92, 0.15);
+  --danger: #b85d5d;
+  --warning: rgba(184, 93, 93, 0.15);
+
+  --serif: 'Cormorant Garamond', 'Georgia', serif;
+  --sans: 'Inter', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  font-family: var(--sans);
+  color: var(--text-primary);
+  background: var(--bg-deep);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
