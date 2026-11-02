@@ -232,9 +232,10 @@
 .desk-action-icon { font-size: 16px; }
 .desk-action-done { color: #8fbf8a; }
 
-/* Janelas */
+/* Janelas: fixas na tela, para aparecer onde a pessoa está olhando mesmo
+   com a mesa rolada (telas estreitas) */
 .desk-modal {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 5;
   display: flex;

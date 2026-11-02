@@ -38,3 +38,17 @@ feito, marque-o e indique o commit.
         voz.
       Voz gravada ou sintética fica para depois; as legendas continuam servindo de
       acessibilidade se houver áudio. *(teste do jogo completo, 02/11/2026)*
+- [ ] **Modo 3: documentos do dossiê com visual próprio.** Hoje são só título e texto. Cada um
+      deve parecer o que é:
+      - **Foto anexada** (notebook quebrado): ilustração no estilo das artes do Modo 1, com cara
+        de foto impressa presa ao dossiê. **Única arte nova**, a cargo do pesquisador. Enquanto
+        não existir, mostrar um quadro em formato de foto com a descrição; a descrição continua
+        como legenda e texto alternativo;
+      - **Print de mensagens:** montado em HTML com o visual de conversa do celular do Modo 2
+        (balões, nome do Leo, horário);
+      - **Ficha do NAE:** formulário com cabeçalho institucional, campos e carimbo, mantendo o
+        texto que muda conforme a aliada (Carla ou Lúcia);
+      - **Mensagem recente de Leo:** notificação de celular, como na tela de bloqueio.
+      Só a foto vira imagem; o resto continua texto editável (facilita revisar depois do Ciclo 1 e
+      é lido por leitores de tela). No código: tipo de documento e campo de imagem opcional em
+      `DossieDocument`. *(teste do jogo completo, 02/11/2026)*
