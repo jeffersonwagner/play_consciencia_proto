@@ -172,6 +172,17 @@ export class SaveStore {
     writeJSON(this.store, SAVE_KEY, this.data);
   }
 
+  /** Cópia de todo o progresso salvo (para exportação de pesquisa). */
+  snapshot(): SaveData {
+    return JSON.parse(JSON.stringify(this.data)) as SaveData;
+  }
+
+  /** Apaga todo o progresso (troca de participante). */
+  resetAll(): void {
+    this.data = emptySave();
+    writeJSON(this.store, SAVE_KEY, this.data);
+  }
+
   resetCampaign(protagonist: string): void {
     delete this.data.campaigns[protagonist];
     writeJSON(this.store, SAVE_KEY, this.data);

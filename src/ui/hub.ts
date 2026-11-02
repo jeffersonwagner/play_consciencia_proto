@@ -6,7 +6,7 @@
 // ============================================================
 
 import type { Protagonist } from '../../content/types';
-import { DEV, LOCK_PROGRESSION } from '../core/config';
+import { DEV, EVALUATION_OFF, LOCK_PROGRESSION } from '../core/config';
 import type { Campaign, EspelhoState } from '../core/save';
 import { byId, el } from './dom';
 
@@ -22,6 +22,10 @@ export interface HubActions {
   showDossieSummary(p: Protagonist): void;
   startEspelho(fresh: boolean): void;
   showEspelhoReport(): void;
+  /** Rodapé extra (progresso da participação, na build de avaliação). */
+  footer?(): HTMLElement | null;
+  /** Modos oferecidos (na avaliação, só os do ciclo); sem a opção, todos. */
+  modes?: number[];
 }
 
 const MODES = [
@@ -37,9 +41,14 @@ export function renderHub(protagonists: Protagonist[], actions: HubActions): voi
   showProtagonists(screen, protagonists, actions);
 }
 
+function footerOf(actions: HubActions): HTMLElement[] {
+  const footer = actions.footer?.();
+  return footer ? [footer] : [];
+}
+
 function header(sub: string): HTMLElement[] {
   return [
-    el('div', { className: 'title-eyebrow' }, `Jogo Sério · Protótipo de Pesquisa${DEV ? ' · modo dev' : ''}`),
+    el('div', { className: 'title-eyebrow' }, `Jogo Sério · Protótipo de Pesquisa${EVALUATION_OFF ? ' · jogo completo, sem avaliação' : ''}${DEV ? ' · modo dev' : ''}`),
     el('h1', { className: 'title-main' }, 'Play na Consciência'),
     el('div', { className: 'title-sub' }, sub),
     el('div', { className: 'title-divider' }),
@@ -64,6 +73,7 @@ function showProtagonists(screen: HTMLElement, protagonists: Protagonist[], acti
   screen.replaceChildren(
     ...header('Escolha uma história'),
     el('div', { className: 'hub-grid' }, ...cards),
+    ...footerOf(actions),
   );
   screen.scrollTop = 0;
 }
@@ -201,7 +211,8 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
       ),
     );
 
-  const modeRows = [modo1, modo2, modo3, modo4];
+  // Na avaliação, só os modos do ciclo aparecem no menu
+  const modeRows = [modo1, modo2, modo3, modo4].filter((_, i) => !actions.modes || actions.modes.includes(i + 1));
 
   screen.replaceChildren(
     ...header(p.name),
@@ -217,6 +228,7 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
       className: 'secondary-button hub-back',
       onclick: () => showProtagonists(screen, protagonists, actions),
     }, '← Outras histórias'),
+    ...footerOf(actions),
   );
   screen.scrollTop = 0;
 }

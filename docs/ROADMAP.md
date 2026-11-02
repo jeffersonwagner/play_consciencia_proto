@@ -98,7 +98,9 @@ play_consciencia_proto/
 │  ├─ GUIA_DE_CONTEUDO.md         # como escrever cenas, semanas, casos
 │  ├─ MODO2.md                    # regras e balanceamento do Modo 2
 │  ├─ MODO3.md                    # regras e balanceamento do Modo 3
-│  └─ MODO4.md                    # regras do Modo 4
+│  ├─ MODO4.md                    # regras do Modo 4
+│  ├─ CICLO1.md                   # roteiro de aplicação e dicionário de dados
+│  └─ COLETA.md                   # planilha Google, período e builds
 ├─ public/assets/                 # servidos como estão
 │  ├─ fonts/
 │  ├─ audio/music/  audio/sfx/
@@ -199,9 +201,10 @@ O cronograma da qualificação previa a coleta do Ciclo 1 (Modos 1, 2 e 3) em no
 - **Entrega:** a Júlia completa nos Modos 1→2→3
 
 ### Fase 3 — Instrumentação e Ciclo 1 (01/12 a 19/12)
-- [ ] Tela de consentimento/código do participante (sem dados pessoais)
-- [ ] Exportação da telemetria (JSON + CSV) no fim da sessão
-- [ ] Build offline em arquivo único + roteiro de aplicação
+- [x] Build de coleta (`npm run build:pesquisa`): TCLE eletrônico, código gerado pelo jogo, TCLE e questionários dos Ciclos 1 e 2 dentro do jogo (ciclo escolhido na planilha)
+- [x] Envio automático para planilha Google (Apps Script), com fila offline; período e liga/desliga controlados na planilha e validados no servidor — ver [COLETA.md](COLETA.md)
+- [x] Build oficial (`npm run build`) sem nenhum código de pesquisa
+- [x] Roteiro de aplicação e dicionário de dados em [CICLO1.md](CICLO1.md)
 - [ ] Teste interno (debug, compreensão, usabilidade): 2 a 3 pessoas
 - [ ] **Coleta do Ciclo 1** (8 a 12 participantes, Modos 1 a 3, Júlia)
 - [ ] Análise preliminar → lista de ajustes priorizados

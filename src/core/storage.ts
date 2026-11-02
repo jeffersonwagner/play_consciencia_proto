@@ -26,6 +26,15 @@ export function browserStore(): KeyValueStore {
   }
 }
 
+/** Mesmo armazenamento, com as chaves separadas por um prefixo. */
+export function prefixedStore(base: KeyValueStore, prefix: string): KeyValueStore {
+  return {
+    getItem: k => base.getItem(prefix + k),
+    setItem: (k, v) => base.setItem(prefix + k, v),
+    removeItem: k => base.removeItem(prefix + k),
+  };
+}
+
 export function readJSON<T>(store: KeyValueStore, key: string): T | null {
   try {
     const raw = store.getItem(key);

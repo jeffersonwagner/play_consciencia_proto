@@ -22,7 +22,8 @@ import './styles/print.css';
 import { protagonists } from '../content/protagonists';
 import { DEV } from './core/config';
 import { SaveStore } from './core/save';
-import { browserStore } from './core/storage';
+import { EVALUATION_OFF } from './core/config';
+import { browserStore, prefixedStore } from './core/storage';
 import { Telemetry } from './core/telemetry';
 import { showFragmentosSummary, startFragmentos, type FragmentosDeps } from './modes/fragmentos';
 import { showDossieSummary, startDossie } from './modes/dossie';
@@ -32,7 +33,9 @@ import { byId } from './ui/dom';
 import { renderHub } from './ui/hub';
 import { mountSafetyBar } from './ui/safety';
 
-const store = browserStore();
+// Jogo completo aberto na build de avaliação (?avaliacao=0): progresso
+// separado, para os testes do pesquisador não se misturarem às participações
+const store = EVALUATION_OFF ? prefixedStore(browserStore(), 'teste_') : browserStore();
 const saves = new SaveStore(store);
 const telemetry = new Telemetry(store);
 
@@ -44,43 +47,64 @@ const deps: FragmentosDeps = {
 };
 
 mountSafetyBar();
-renderHub(protagonists, {
-  campaign: id => saves.campaign(id),
-  espelho: () => saves.espelho(),
-  anyDossieDone: () => saves.anyDossieDone(),
-  startFragmentos: (p, fresh) => {
-    byId('hub-screen').classList.add('hidden');
-    startFragmentos(p, fresh, deps);
-  },
-  showFragmentosSummary: p => {
-    byId('hub-screen').classList.add('hidden');
-    showFragmentosSummary(p, deps);
-  },
-  startPonte: (p, ally, fresh) => {
-    byId('hub-screen').classList.add('hidden');
-    startPonte(p, ally, fresh, deps);
-  },
-  showPonteSummary: p => {
-    byId('hub-screen').classList.add('hidden');
-    showPonteSummary(p, deps);
-  },
-  startDossie: (p, fresh) => {
-    byId('hub-screen').classList.add('hidden');
-    startDossie(p, fresh, deps);
-  },
-  showDossieSummary: p => {
-    byId('hub-screen').classList.add('hidden');
-    showDossieSummary(p, deps);
-  },
-  startEspelho: fresh => {
-    byId('hub-screen').classList.add('hidden');
-    startEspelho(fresh, deps);
-  },
-  showEspelhoReport: () => {
-    byId('hub-screen').classList.add('hidden');
-    showEspelhoReport(deps);
-  },
-});
+
+export interface HubOptions {
+  /** Rodapé com o progresso da participação (build de avaliação). */
+  footer?: () => HTMLElement | null;
+  /** Modos oferecidos no menu; sem a opção, todos. */
+  modes?: number[];
+}
+
+function openHub({ footer, modes }: HubOptions = {}): void {
+  renderHub(protagonists, {
+    campaign: id => saves.campaign(id),
+    espelho: () => saves.espelho(),
+    anyDossieDone: () => saves.anyDossieDone(),
+    startFragmentos: (p, fresh) => {
+      byId('hub-screen').classList.add('hidden');
+      startFragmentos(p, fresh, deps);
+    },
+    showFragmentosSummary: p => {
+      byId('hub-screen').classList.add('hidden');
+      showFragmentosSummary(p, deps);
+    },
+    startPonte: (p, ally, fresh) => {
+      byId('hub-screen').classList.add('hidden');
+      startPonte(p, ally, fresh, deps);
+    },
+    showPonteSummary: p => {
+      byId('hub-screen').classList.add('hidden');
+      showPonteSummary(p, deps);
+    },
+    startDossie: (p, fresh) => {
+      byId('hub-screen').classList.add('hidden');
+      startDossie(p, fresh, deps);
+    },
+    showDossieSummary: p => {
+      byId('hub-screen').classList.add('hidden');
+      showDossieSummary(p, deps);
+    },
+    startEspelho: fresh => {
+      byId('hub-screen').classList.add('hidden');
+      startEspelho(fresh, deps);
+    },
+    showEspelhoReport: () => {
+      byId('hub-screen').classList.add('hidden');
+      showEspelhoReport(deps);
+    },
+    footer,
+    modes,
+  });
+}
+
+// O módulo de pesquisa só entra na build de coleta (npm run build:pesquisa).
+// A condição usa import.meta.env diretamente para que, na build oficial,
+// o Vite descarte o módulo inteiro (nenhum código de pesquisa é incluído).
+if ((import.meta.env.VITE_RESEARCH === '1' && !EVALUATION_OFF) || (import.meta.env.DEV && location.search.includes('pesquisa'))) {
+  import('./research').then(m => m.bootResearch({ store, saves, telemetry, protagonists, openHub }));
+} else {
+  openHub();
+}
 
 // Acesso para depuração no console: __pnc.telemetry.download()
 if (DEV) {

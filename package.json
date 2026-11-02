@@ -1,7 +1,7 @@
 {
   "name": "play-na-consciencia",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.5.0",
   "type": "module",
   "description": "Jogo sério Play na Consciência — conscientização sobre a violência contra a mulher.",
   "scripts": {
@@ -11,7 +11,11 @@
     "check": "tsc --noEmit && vitest run",
     "test": "vitest",
     "validate": "vitest run tests/content.test.ts",
-    "assets": "node tools/optimize-assets.mjs"
+    "assets": "node tools/optimize-assets.mjs",
+    "build:pesquisa": "npm run check && vite build --mode pesquisa",
+    "preview:pesquisa": "vite preview --outDir dist-pesquisa",
+    "dev:pesquisa": "vite --mode pesquisa-local",
+    "coletor": "node tools/mock-collector.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

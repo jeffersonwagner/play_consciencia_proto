@@ -1,0 +1,172 @@
+/* Build de coleta: boas-vindas, TCLE, questionários, progresso e painel. */
+
+.research-placeholder {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  width: min(720px, 100%);
+  margin-bottom: 24px;
+  padding: 10px 16px;
+  background: #7a1f1f;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.research-title { font-size: clamp(30px, 5vw, 44px) !important; margin-bottom: 8px; }
+
+.gate-form {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.gate-note { font-size: 14px; line-height: 1.55; color: var(--text-muted); text-align: center; margin-bottom: 16px; }
+.gate-error { font-size: 14px; color: #e8a0a0; min-height: 20px; }
+.gate-form .primary-button, .q-form .primary-button { min-width: 0; margin-top: 8px; }
+
+.gate-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.gate-check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+
+.tcle {
+  max-width: 640px;
+  padding: 24px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+}
+
+.tcle-text { font-size: 15px; line-height: 1.65; }
+.tcle-download { align-self: flex-start; margin-bottom: 8px; }
+
+.research-code {
+  font-family: var(--sans);
+  font-size: clamp(34px, 7vw, 52px);
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: var(--accent);
+  padding: 12px 28px;
+  border: 1px dashed var(--accent);
+  margin: 12px 0 24px;
+  user-select: all;
+}
+
+/* Questionários */
+.q-form { width: min(720px, 100%); display: flex; flex-direction: column; gap: 18px; text-align: left; }
+.q-section { border: none; display: flex; flex-direction: column; gap: 18px; }
+.q-section legend { font-family: var(--serif); font-size: 22px; color: var(--accent); margin-bottom: 8px; }
+
+.q-item {
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-left: 3px solid var(--accent);
+}
+
+.q-item.missing { border-color: var(--danger); }
+.q-question { font-size: 16px; line-height: 1.5; margin-bottom: 12px; }
+.q-required { color: #e8a0a0; }
+
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-likert { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+
+.q-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.q-likert .q-option {
+  flex: 1 1 110px;
+  flex-direction: column;
+  text-align: center;
+  padding: 10px 6px;
+  border: 1px solid var(--panel-border);
+  font-size: 13px;
+}
+
+.q-likert .q-option:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.q-option input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+.q-text {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--panel-border);
+  resize: vertical;
+}
+
+/* Progresso da participação no menu */
+.research-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 36px;
+  padding: 14px 18px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.research-footer .primary-button { margin-bottom: 0; }
+.research-steps { display: flex; gap: 12px; }
+.research-steps .done { color: #8fbf8a; }
+
+/* Painel do pesquisador (Ctrl + Alt + P) */
+.research-panel { position: fixed; z-index: 300; }
+.research-info { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-size: 14px; }
+.research-info dt { color: var(--text-muted); }
+
+/* TCLE: cabeçalho, seções e autorização de áudio */
+.tcle-header { font-size: 13px; line-height: 1.5; color: var(--text-muted); }
+.tcle-section { font-family: var(--serif); font-size: 19px; color: var(--accent); margin-top: 14px; }
+.tcle-audio { display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid var(--panel-border); }
+.tcle-audio p { font-size: 15px; line-height: 1.5; }
+
+/* Questionários: notas de seção e campos curtos */
+.q-note { font-size: 14px; font-style: italic; color: var(--text-muted); margin: -4px 0 4px; }
+.q-short {
+  width: min(360px, 100%);
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--panel-border);
+}
+.q-number { width: 120px; }
+
+/* Canais de apoio na tela final */
+.research-support {
+  width: min(560px, 100%);
+  padding: 20px 24px;
+  margin: 8px 0 20px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+}
+.research-support h2 { font-family: var(--serif); font-size: 20px; color: var(--accent); margin-bottom: 8px; }
+.research-support p { font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
+.research-support dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 14px; margin-bottom: 14px; }
+.research-support dt { font-weight: 600; color: var(--text-primary); }
+.research-support dd { color: var(--text-muted); }

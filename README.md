@@ -11,10 +11,14 @@ Requer Node.js 20 ou superior.
 npm install
 npm run dev        # http://localhost:5173 (modo dev: pular, seletor de cena)
 npm run build      # tipos + testes + build em dist/
-npm run preview    # serve dist/ como na versão de pesquisa
+npm run preview    # serve dist/
+npm run build:pesquisa   # build de coleta de dados em dist-pesquisa/
+npm run coletor          # coletor simulado (testes sem conta Google)
+npm run dev:pesquisa     # jogo de pesquisa apontando para o coletor simulado
 ```
 
-- **Versão de pesquisa:** é o `dist/`. O `index.html` vem com JS, CSS e fontes embutidos, e a pasta `assets/` fica ao lado. Funciona hospedado ou aberto direto do disco ou de um pendrive, sem internet. Os controles de teste ficam escondidos; para mostrá-los, adicione `?dev` à URL.
+- **Build de coleta (`dist-pesquisa/`):** TCLE, questionários e envio automático das respostas e das decisões para uma planilha Google. O período e o liga/desliga da coleta ficam na planilha. Configuração em [docs/COLETA.md](docs/COLETA.md); roteiro em [docs/CICLO1.md](docs/CICLO1.md).
+- **Versão oficial (`dist/`), sem nenhum código de pesquisa:** O `index.html` vem com JS, CSS e fontes embutidos, e a pasta `assets/` fica ao lado. Funciona hospedado ou aberto direto do disco ou de um pendrive, sem internet. Os controles de teste ficam escondidos; para mostrá-los, adicione `?dev` à URL.
 - **Teclado:** Espaço, Enter ou → avançam o diálogo; as teclas 1 a 9 escolhem uma opção; Esc aciona a saída rápida.
 - **Depuração** (modo dev): `__pnc.telemetry.download()` no console baixa os eventos registrados, e `__pnc.saves` dá acesso ao progresso.
 
@@ -27,7 +31,10 @@ content/                     roteiros e dados (o que muda entre histórias)
 src/
   core/                      save, áudio, telemetria, config, assets
   engine/vn/                 motor de visual novel + validação de roteiro
-  modes/fragmentos/          Modo 1 (controles + resumo)
+  modes/                     um diretório por modo (fragmentos, ponte, dossie, espelho)
+  research/                  coleta: TCLE, questionários, envio para a planilha
+content/research/            TCLE e questionários dos Ciclos 1 e 2
+tools/apps-script/           receptor da planilha Google (Code.gs)
   ui/                        menu inicial, barra de segurança, indicador
   styles/
 assets-src/                  arte original (PNG) — fonte para `npm run assets`
