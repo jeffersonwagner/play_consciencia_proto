@@ -12,7 +12,7 @@
     background: white !important;
     color: black !important;
   }
-  #stage, #hub-screen, #ponte-screen, #dossie-screen, #scene-transition, #safety-bar {
+  #stage, #hub-screen, #ponte-screen, #dossie-screen, #espelho-screen, #scene-transition, #safety-bar {
     display: none !important;
   }
   .summary-scene-title { color: #8a6020 !important; }

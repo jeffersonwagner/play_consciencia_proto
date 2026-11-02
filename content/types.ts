@@ -191,6 +191,39 @@ export interface DossieContent {
   globalEndings: Record<PonteEnding, string>;
 }
 
+// ------------------------------------------------------------
+// MODO 4 — "O ESPELHO" (ver docs/MODO4.md)
+// ------------------------------------------------------------
+
+export type AttitudeProfile = 'ativo' | 'passivo' | 'reprodutor';
+
+export interface GlossaryTerm {
+  id: string;
+  term: string;
+  definition: string;
+}
+
+export interface EspelhoOption {
+  text: string;
+  profile: AttitudeProfile;
+  /** Reflexão mostrada no Relatório de Atitudes (não durante o jogo). */
+  reflection: string;
+}
+
+export interface EspelhoScenario {
+  id: string;
+  /** Contexto do cotidiano: Trabalho, Casa, Amigos… */
+  setting: string;
+  icon: string;
+  title: string;
+  situation: string;
+  options: EspelhoOption[];
+  /** Conceito pedagógico (id do glossário). */
+  concept: string;
+  /** Ligação com as histórias dos outros modos. */
+  connection: string;
+}
+
 export interface Protagonist {
   id: ProtagonistId;
   name: string;

@@ -97,7 +97,8 @@ play_consciencia_proto/
 │  ├─ ROADMAP.md                  # este documento
 │  ├─ GUIA_DE_CONTEUDO.md         # como escrever cenas, semanas, casos
 │  ├─ MODO2.md                    # regras e balanceamento do Modo 2
-│  └─ MODO3.md                    # regras e balanceamento do Modo 3
+│  ├─ MODO3.md                    # regras e balanceamento do Modo 3
+│  └─ MODO4.md                    # regras do Modo 4
 ├─ public/assets/                 # servidos como estão
 │  ├─ fonts/
 │  ├─ audio/music/  audio/sfx/
@@ -206,9 +207,9 @@ O cronograma da qualificação previa a coleta do Ciclo 1 (Modos 1, 2 e 3) em no
 - [ ] Análise preliminar → lista de ajustes priorizados
 
 ### Fase 4 — Modo 4 "O Espelho" + ajustes do Ciclo 1 (15/12 a 10/01)
-- [ ] Resolver G5 e G6 no GDD
-- [ ] De 5 a 7 cenários do cotidiano, com escolhas
-- [ ] Relatório de Atitudes: perfil (aliado ativo / observador passivo / reprodutor), glossário contextual e ligação com os modos anteriores
+- [x] Resolver G5 e G6 no GDD (decisões provisórias em [MODO4.md](MODO4.md))
+- [x] 7 cenários do cotidiano (4 do GDD + 3 novos), com opções embaralhadas e sem retorno durante o jogo
+- [x] Relatório de Atitudes: perfil (aliado ativo / observador passivo / reprodutor / misto), glossário contextual e ligação com os modos anteriores
 - [ ] Aplicar os ajustes do Ciclo 1
 - [ ] Revisão MDA/DPE: tabela mecânica → dinâmica → estética → objetivo pedagógico
 - [ ] Acessibilidade: tamanho de fonte, contraste, `prefers-reduced-motion`, leitor de tela

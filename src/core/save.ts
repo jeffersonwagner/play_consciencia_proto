@@ -103,9 +103,22 @@ export interface Campaign {
   dossie?: DossieState;
 }
 
+/** Modo 4: global, não depende da protagonista. */
+export interface EspelhoState {
+  /** Ordem sorteada das opções de cada cenário (índices originais). */
+  order: Record<string, number[]>;
+  /** Resposta de cada cenário (índice original da opção). */
+  answers: Record<string, number>;
+  /** Tempo de decisão de cada cenário, em ms. */
+  decisionMs: Record<string, number>;
+  current: number;
+  completed: boolean;
+}
+
 export interface SaveData {
   version: number;
   campaigns: Record<string, Campaign>;
+  espelho?: EspelhoState;
 }
 
 export function emptySave(): SaveData {
@@ -123,7 +136,7 @@ export function migrate(raw: unknown): SaveData {
   if (data.version !== SAVE_VERSION || typeof data.campaigns !== 'object' || data.campaigns === null) {
     return emptySave();
   }
-  return { version: SAVE_VERSION, campaigns: data.campaigns };
+  return { version: SAVE_VERSION, campaigns: data.campaigns, espelho: data.espelho };
 }
 
 export class SaveStore {
@@ -143,6 +156,20 @@ export class SaveStore {
     this.data.campaigns[protagonist] = campaign;
     writeJSON(this.store, SAVE_KEY, this.data);
     return campaign;
+  }
+
+  /** Alguma protagonista com o Modo 3 concluído (libera o Modo 4). */
+  anyDossieDone(): boolean {
+    return Object.values(this.data.campaigns).some(c => Boolean(c.dossie?.ending));
+  }
+
+  espelho(): EspelhoState | undefined {
+    return this.data.espelho;
+  }
+
+  setEspelho(state: EspelhoState | undefined): void {
+    this.data.espelho = state;
+    writeJSON(this.store, SAVE_KEY, this.data);
   }
 
   resetCampaign(protagonist: string): void {

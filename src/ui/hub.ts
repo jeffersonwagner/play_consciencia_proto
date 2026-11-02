@@ -7,17 +7,21 @@
 
 import type { Protagonist } from '../../content/types';
 import { DEV, LOCK_PROGRESSION } from '../core/config';
-import type { Campaign } from '../core/save';
+import type { Campaign, EspelhoState } from '../core/save';
 import { byId, el } from './dom';
 
 export interface HubActions {
   campaign(id: string): Campaign;
+  espelho(): EspelhoState | undefined;
+  anyDossieDone(): boolean;
   startFragmentos(p: Protagonist, fresh: boolean): void;
   showFragmentosSummary(p: Protagonist): void;
   startPonte(p: Protagonist, ally: string, fresh: boolean): void;
   showPonteSummary(p: Protagonist): void;
   startDossie(p: Protagonist, fresh: boolean): void;
   showDossieSummary(p: Protagonist): void;
+  startEspelho(fresh: boolean): void;
+  showEspelhoReport(): void;
 }
 
 const MODES = [
@@ -172,12 +176,32 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
     );
   }
 
-  const modeRows = [
-    modo1,
-    modo2,
-    modo3,
-    disabledMode(MODES[3], 'Em desenvolvimento'),
-  ];
+  // Modo 4: global (o mesmo para todas as protagonistas)
+  const espelho = actions.espelho();
+  const modo4 = LOCK_PROGRESSION && !actions.anyDossieDone()
+    ? disabledMode(MODES[3], 'Conclua o Modo 3')
+    : el('div', { className: 'hub-mode' },
+      modeInfo(MODES[3]),
+      el('div', { className: 'hub-mode-actions' },
+        espelho && !espelho.completed && el('button', {
+          className: 'primary-button',
+          onclick: () => actions.startEspelho(false),
+        }, 'Continuar de onde parei'),
+        espelho?.completed && el('button', {
+          className: 'primary-button',
+          onclick: () => actions.showEspelhoReport(),
+        }, 'Ver relatório'),
+        el('button', {
+          className: espelho ? 'secondary-button' : 'primary-button',
+          onclick: () => {
+            if (espelho && !confirmRestart()) return;
+            actions.startEspelho(true);
+          },
+        }, espelho ? 'Começar de novo' : 'Olhar o espelho'),
+      ),
+    );
+
+  const modeRows = [modo1, modo2, modo3, modo4];
 
   screen.replaceChildren(
     ...header(p.name),

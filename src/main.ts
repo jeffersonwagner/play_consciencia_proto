@@ -16,6 +16,7 @@ import './styles/hub.css';
 import './styles/safety.css';
 import './styles/phone.css';
 import './styles/desk.css';
+import './styles/espelho.css';
 import './styles/print.css';
 
 import { protagonists } from '../content/protagonists';
@@ -25,6 +26,7 @@ import { browserStore } from './core/storage';
 import { Telemetry } from './core/telemetry';
 import { showFragmentosSummary, startFragmentos, type FragmentosDeps } from './modes/fragmentos';
 import { showDossieSummary, startDossie } from './modes/dossie';
+import { showEspelhoReport, startEspelho } from './modes/espelho';
 import { showPonteSummary, startPonte } from './modes/ponte';
 import { byId } from './ui/dom';
 import { renderHub } from './ui/hub';
@@ -44,6 +46,8 @@ const deps: FragmentosDeps = {
 mountSafetyBar();
 renderHub(protagonists, {
   campaign: id => saves.campaign(id),
+  espelho: () => saves.espelho(),
+  anyDossieDone: () => saves.anyDossieDone(),
   startFragmentos: (p, fresh) => {
     byId('hub-screen').classList.add('hidden');
     startFragmentos(p, fresh, deps);
@@ -67,6 +71,14 @@ renderHub(protagonists, {
   showDossieSummary: p => {
     byId('hub-screen').classList.add('hidden');
     showDossieSummary(p, deps);
+  },
+  startEspelho: fresh => {
+    byId('hub-screen').classList.add('hidden');
+    startEspelho(fresh, deps);
+  },
+  showEspelhoReport: () => {
+    byId('hub-screen').classList.add('hidden');
+    showEspelhoReport(deps);
   },
 });
 

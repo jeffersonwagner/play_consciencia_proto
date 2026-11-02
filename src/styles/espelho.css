@@ -1,0 +1,169 @@
+/* Modo 4 — O Espelho: uma situação por vez, centralizada. */
+
+#espelho-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 16px 24px;
+  overflow-y: auto;
+  background:
+    radial-gradient(ellipse at 50% 10%, rgba(200, 210, 230, 0.07), transparent 55%),
+    var(--bg-deep);
+}
+
+#espelho-screen.hidden { display: none; }
+
+.mirror-card {
+  width: min(720px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 36px 40px;
+  background: linear-gradient(160deg, rgba(220, 225, 240, 0.06), rgba(20, 18, 26, 0.92) 40%);
+  border: 1px solid rgba(220, 225, 240, 0.18);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: mirrorIn 0.45s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.mirror-card.leaving { opacity: 0; transform: translateY(-8px); }
+
+@keyframes mirrorIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.mirror-intro { text-align: center; align-items: center; }
+.mirror-intro .title-eyebrow { margin-bottom: 0; }
+
+.mirror-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.1;
+}
+
+.mirror-text {
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.mirror-intro .mirror-text { font-style: italic; color: var(--text-muted); max-width: 560px; }
+
+.mirror-progress { display: flex; gap: 6px; }
+.mirror-dot { flex: 1; height: 3px; border-radius: 2px; background: rgba(220, 200, 180, 0.15); }
+.mirror-dot.done { background: var(--text-muted); }
+.mirror-dot.now { background: var(--accent); }
+
+.mirror-setting {
+  align-self: flex-start;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--panel-border);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.mirror-question {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--accent);
+  margin-top: 4px;
+}
+
+.mirror-options { display: flex; flex-direction: column; gap: 10px; }
+
+.mirror-option {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 16px 20px;
+  text-align: left;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.45;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--panel-border);
+  border-left: 3px solid rgba(220, 225, 240, 0.5);
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.mirror-option:hover { background: rgba(255, 255, 255, 0.07); border-left-color: var(--accent); transform: translateX(4px); }
+.mirror-option-key { font-family: var(--sans); font-size: 12px; color: var(--accent); min-width: 14px; }
+.mirror-count { font-size: 12px; color: var(--text-muted); text-align: right; }
+
+@media (max-width: 600px) {
+  .mirror-card { padding: 24px 20px; }
+  .mirror-text { font-size: 18px; }
+  .mirror-option { font-size: 16px; padding: 14px 16px; }
+}
+
+/* Relatório de Atitudes (na tela de resumo) */
+.profile-bar {
+  display: flex;
+  height: 26px;
+  margin-top: 16px;
+  border-radius: 2px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.profile-segment { display: flex; align-items: center; justify-content: center; color: #111; }
+.profile-segment.ativo, .profile-legend-item.ativo::before { background: #8fbf8a; }
+.profile-segment.passivo, .profile-legend-item.passivo::before { background: var(--accent); }
+.profile-segment.reprodutor, .profile-legend-item.reprodutor::before { background: var(--danger); }
+
+.profile-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; font-size: 13px; color: var(--text-muted); }
+
+.profile-legend-item::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+
+.report-concept {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  padding: 10px 12px;
+  background: var(--accent-soft);
+}
+
+.report-concept strong { color: var(--accent); }
+
+.report-connection {
+  margin-top: 8px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.report-glossary { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; font-size: 14px; line-height: 1.5; }
+.report-glossary dt { font-weight: 600; color: var(--accent); }
+.report-glossary dd { color: var(--text-primary); }
+
+@media (max-width: 600px) {
+  .report-glossary { grid-template-columns: 1fr; }
+  .report-glossary dd { margin-bottom: 8px; }
+}
+
+@media print {
+  .report-concept { background: #f4ecd8 !important; color: black !important; }
+  .report-glossary dt { color: #8a6020 !important; }
+  .report-glossary dd, .report-connection { color: black !important; }
+}
