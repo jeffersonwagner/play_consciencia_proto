@@ -1,6 +1,7 @@
 import type { Protagonist } from '../../types';
 import { script } from './modo1';
 import { ponte } from './modo2';
+import { dossie } from './modo3';
 
 export const julia: Protagonist = {
   id: 'julia',
@@ -28,4 +29,5 @@ export const julia: Protagonist = {
     },
   },
   ponte,
+  dossie,
 };

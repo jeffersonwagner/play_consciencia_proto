@@ -96,7 +96,8 @@ play_consciencia_proto/
 ├─ docs/
 │  ├─ ROADMAP.md                  # este documento
 │  ├─ GUIA_DE_CONTEUDO.md         # como escrever cenas, semanas, casos
-│  └─ MODO2.md                    # regras e balanceamento do Modo 2
+│  ├─ MODO2.md                    # regras e balanceamento do Modo 2
+│  └─ MODO3.md                    # regras e balanceamento do Modo 3
 ├─ public/assets/                 # servidos como estão
 │  ├─ fonts/
 │  ├─ audio/music/  audio/sfx/
@@ -188,12 +189,12 @@ O cronograma da qualificação previa a coleta do Ciclo 1 (Modos 1, 2 e 3) em no
 - **Entrega:** a Júlia jogável de ponta a ponta nos Modos 1→2
 
 ### Fase 2 — Modo 3 "Dossiê 180", Júlia (23/11 a 05/12)
-- [ ] Mesa de trabalho: dossiê central montado a partir do estado dos Modos 1 e 2
-- [ ] Etiquetas de violência com *drag and drop* (mouse, toque **e** teclado)
-- [ ] Rede de profissionais com traços (acolhedor/viés) e plantão/tempo
-- [ ] Barra de ações de encaminhamento com **sequenciamento** (a ordem importa)
-- [ ] Nível de Bem-Estar e finais (>80 / 50–79 / <50)
-- [ ] Final global da Júlia (Modo 2 + Modo 3)
+- [x] Mesa de trabalho: dossiê central montado a partir do estado dos Modos 1 e 2
+- [x] Etiquetas de violência com *drag and drop* (arrastar com o mouse; clicar/tocar/teclado como alternativa) e taxonomia única (G3)
+- [x] Rede de profissionais com traços (acolhedor/viés) e plantão/tempo (5 períodos)
+- [x] Barra de ações de encaminhamento com **sequenciamento** (a ordem importa) e dilema da "compensação"
+- [x] Nível de Bem-Estar e finais (≥80 / 50–79 / <50) — regras em [MODO3.md](MODO3.md)
+- [x] Final global da Júlia (Modo 2 + Modo 3), no resumo do Modo 3
 - **Entrega:** a Júlia completa nos Modos 1→2→3
 
 ### Fase 3 — Instrumentação e Ciclo 1 (01/12 a 19/12)

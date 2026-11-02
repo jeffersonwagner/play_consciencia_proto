@@ -68,10 +68,39 @@ export interface PonteState {
   ending: 'positivo' | 'neutro' | 'negativo' | null;
 }
 
+/** Um registro na linha do tempo do caso (classificação, encaminhamento, dilema, espera). */
+export interface DossieLogEntry {
+  slot: number;
+  kind: 'classificacao' | 'acao' | 'evento' | 'espera';
+  title: string;
+  delta: number;
+  feedback: string;
+  narration?: string;
+}
+
+export interface DossieState {
+  startWellbeing: number;
+  wellbeing: number;
+  /** Período atual (índice em DossieContent.slots). */
+  slot: number;
+  tags: string[];
+  classified: boolean;
+  /** Ações já realizadas: id da ação → profissional (ou 'default'). */
+  done: Record<string, string>;
+  /** Ordem em que as ações foram feitas (para o sequenciamento). */
+  order: string[];
+  resolvedEvents: string[];
+  log: DossieLogEntry[];
+  /** Bem-estar ao fim de cada período. */
+  history: number[];
+  ending: 'positivo' | 'neutro' | 'negativo' | null;
+}
+
 export interface Campaign {
   protagonist: string;
   fragmentos?: FragmentosState;
   ponte?: PonteState;
+  dossie?: DossieState;
 }
 
 export interface SaveData {

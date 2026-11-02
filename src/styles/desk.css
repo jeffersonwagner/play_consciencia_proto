@@ -1,0 +1,293 @@
+/* Modo 3 — Dossiê 180: mesa de trabalho. */
+
+#dossie-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 16px 12px;
+  gap: 12px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 165, 92, 0.08), transparent 60%),
+    var(--bg-deep);
+  overflow: hidden;
+}
+
+#dossie-screen.hidden { display: none; }
+
+.desk-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Barra superior */
+.desk-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 10px 18px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+}
+
+.desk-case { display: flex; flex-direction: column; gap: 2px; }
+.desk-case-number { font-size: 12px; color: var(--accent); letter-spacing: 0.5px; }
+.desk-case strong { font-family: var(--serif); font-size: 22px; font-weight: 500; }
+
+.desk-time { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.desk-time strong { font-size: 15px; }
+.desk-slots { display: flex; gap: 6px; }
+.desk-slot { width: 22px; height: 6px; border-radius: 3px; background: rgba(220, 200, 180, 0.15); }
+.desk-slot.past { background: var(--text-muted); }
+.desk-slot.now { background: var(--accent); }
+
+.desk-wellbeing { display: flex; align-items: center; gap: 10px; min-width: 260px; }
+.desk-wellbeing strong { font-size: 18px; min-width: 48px; text-align: right; }
+
+.wellbeing-track {
+  position: relative;
+  flex: 1;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(220, 200, 180, 0.12);
+  overflow: hidden;
+}
+
+.wellbeing-fill { height: 100%; transition: width 0.8s ease; }
+.desk-wellbeing.high .wellbeing-fill { background: #8fbf8a; }
+.desk-wellbeing.mid .wellbeing-fill { background: var(--accent); }
+.desk-wellbeing.low .wellbeing-fill { background: var(--danger); }
+.wellbeing-mark { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(240, 235, 226, 0.4); }
+
+/* Área central: três colunas */
+.desk-main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 260px 1fr 230px;
+  gap: 12px;
+}
+
+.desk-panel {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.desk-panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Profissionais */
+.pro-card, .pro-choice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px;
+  border: 1px solid var(--panel-border);
+  border-left: 3px solid;
+  background: rgba(255, 255, 255, 0.02);
+  text-align: left;
+}
+
+.pro-card.acolhedor, .pro-choice.acolhedor { border-left-color: #8fbf8a; }
+.pro-card.vies, .pro-choice.vies { border-left-color: var(--danger); }
+.pro-card.off { opacity: 0.5; }
+.pro-info { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.pro-role { color: var(--text-muted); font-size: 12px; }
+.pro-trait { font-size: 12px; font-style: italic; color: var(--text-primary); }
+.pro-shift { font-size: 11px; color: var(--accent); margin-top: 2px; }
+
+.pro-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--accent);
+}
+
+/* Dossiê */
+.desk-dossier { gap: 14px; }
+
+.dossier-section h3 {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.dossier-section p {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+
+.dossier-docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+
+.dossier-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: #ece4d6;
+  color: #2b2620;
+  font-size: 13px;
+  line-height: 1.45;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.dossier-doc strong { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #8a6020; }
+
+.tag-drop {
+  min-height: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 2px dashed var(--panel-border);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.tag-drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.tag-drop.locked { border-style: solid; }
+.tag-drop-hint { font-size: 13px; color: var(--text-muted); font-style: italic; }
+
+.tag-chip {
+  padding: 7px 12px;
+  font-size: 13px;
+  border: 1px solid rgba(184, 93, 93, 0.5);
+  background: var(--warning);
+  color: #f0d8d8;
+  border-radius: 2px;
+  text-align: left;
+  cursor: grab;
+}
+
+.tag-chip.selected { background: rgba(184, 93, 93, 0.35); border-color: var(--danger); }
+.tag-chip:disabled { cursor: default; opacity: 0.7; }
+.tag-chip.applied { cursor: pointer; }
+.desk-tags .tag-chip { width: 100%; }
+.desk-conclude { min-width: 0; margin-top: 6px; }
+
+.desk-flash { padding: 12px 14px; border: 1px solid; font-size: 14px; line-height: 1.5; }
+.desk-flash.good { background: rgba(143, 191, 138, 0.10); border-color: rgba(143, 191, 138, 0.45); }
+.desk-flash.bad { background: var(--warning); border-color: rgba(184, 93, 93, 0.5); }
+.desk-flash.neutral { background: var(--accent-soft); border-color: var(--panel-border); }
+.desk-flash p { font-family: var(--sans); font-size: 14px; margin: 6px 0 0; }
+.desk-flash .desk-flash-narration { font-family: var(--serif); font-style: italic; font-size: 16px; }
+
+.dossier-log { list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.log-slot { color: var(--text-muted); }
+.log-delta { font-weight: 600; }
+.log-delta.good { color: #8fbf8a; }
+.log-delta.bad { color: #e8a0a0; }
+
+/* Encaminhamentos */
+.desk-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+}
+
+.desk-actions-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+.desk-actions-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.desk-actions-row.secondary { justify-content: flex-end; }
+
+.desk-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  background: #221e2a;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.desk-action:not(:disabled):hover { border-color: var(--accent); }
+.desk-action:disabled { opacity: 0.4; cursor: default; }
+.desk-action.done { opacity: 0.6; }
+.desk-action-icon { font-size: 16px; }
+.desk-action-done { color: #8fbf8a; }
+
+/* Janelas */
+.desk-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(8, 7, 10, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+.desk-modal-card {
+  width: min(560px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--bg-soft);
+  border: 1px solid var(--panel-border);
+  border-top: 3px solid var(--accent);
+}
+
+.desk-modal-card h2 { font-family: var(--serif); font-weight: 500; font-size: 26px; }
+.desk-modal-card p { font-size: 15px; line-height: 1.55; }
+.desk-modal-card .primary-button { min-width: 0; }
+.desk-modal-card .pro-choice { font-size: 14px; line-height: 1.45; }
+.desk-modal-card .pro-choice:not(:disabled):hover { background: rgba(255, 255, 255, 0.06); }
+.desk-modal-card .pro-choice:disabled { opacity: 0.45; cursor: default; }
+.desk-intro { font-family: var(--serif); font-style: italic; font-size: 18px !important; }
+
+/* Desfecho */
+.desk-ending {
+  margin: auto;
+  width: min(620px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  overflow-y: auto;
+}
+
+.desk-ending .desk-wellbeing { width: 100%; }
+.desk-ending-text { font-family: var(--serif); font-size: 19px; line-height: 1.55; }
+.desk-ending .primary-button { min-width: 240px; }
+
+/* Telas estreitas: tudo empilhado, com rolagem */
+@media (max-width: 1000px) {
+  #dossie-screen { overflow-y: auto; padding-bottom: 16px; }
+  .desk-main { display: flex; flex-direction: column; flex: none; }
+  .desk-panel { overflow: visible; }
+  .desk-dossier { order: -1; }
+  .desk-network { order: 1; }
+  .desk-wellbeing { min-width: 0; width: 100%; }
+}

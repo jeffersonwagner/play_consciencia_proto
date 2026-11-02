@@ -16,6 +16,8 @@ export interface HubActions {
   showFragmentosSummary(p: Protagonist): void;
   startPonte(p: Protagonist, ally: string, fresh: boolean): void;
   showPonteSummary(p: Protagonist): void;
+  startDossie(p: Protagonist, fresh: boolean): void;
+  showDossieSummary(p: Protagonist): void;
 }
 
 const MODES = [
@@ -139,11 +141,41 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
     );
   }
 
+  // Modo 3: o caso chega à rede depois do Modo 2 (qualquer final)
   const modo2Done = Boolean(ponte?.ending);
+  const dossie = campaign.dossie;
+  let modo3: HTMLElement;
+  if (!p.dossie) {
+    modo3 = disabledMode(MODES[2], 'Em desenvolvimento');
+  } else if (LOCK_PROGRESSION && !modo2Done) {
+    modo3 = disabledMode(MODES[2], 'Conclua o Modo 2');
+  } else {
+    modo3 = el('div', { className: 'hub-mode' },
+      modeInfo(MODES[2]),
+      el('div', { className: 'hub-mode-actions' },
+        dossie && dossie.ending === null && el('button', {
+          className: 'primary-button',
+          onclick: () => actions.startDossie(p, false),
+        }, 'Continuar de onde parei'),
+        dossie?.ending && el('button', {
+          className: 'primary-button',
+          onclick: () => actions.showDossieSummary(p),
+        }, 'Ver resumo'),
+        el('button', {
+          className: dossie ? 'secondary-button' : 'primary-button',
+          onclick: () => {
+            if (dossie && !confirmRestart()) return;
+            actions.startDossie(p, true);
+          },
+        }, dossie ? 'Começar de novo' : 'Abrir o caso'),
+      ),
+    );
+  }
+
   const modeRows = [
     modo1,
     modo2,
-    disabledMode(MODES[2], LOCK_PROGRESSION && !modo2Done ? 'Conclua o Modo 2' : 'Em desenvolvimento'),
+    modo3,
     disabledMode(MODES[3], 'Em desenvolvimento'),
   ];
 
