@@ -240,3 +240,9 @@ select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
+
+/* Confirmação dentro do jogo (src/ui/confirm.ts) */
+/* Abaixo da barra de segurança (z-index 200): a saída rápida continua clicável */
+.desk-modal.confirm-modal { position: fixed; z-index: 150; }
+.confirm-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+.confirm-actions .primary-button, .confirm-actions .secondary-button { min-width: 0; margin: 0; }

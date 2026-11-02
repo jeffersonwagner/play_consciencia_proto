@@ -10,6 +10,7 @@ import { DEV } from '../../core/config';
 import { newFragmentos, type SaveStore } from '../../core/save';
 import type { Telemetry } from '../../core/telemetry';
 import { VNEngine } from '../../engine/vn/VNEngine';
+import { confirmDialog } from '../../ui/confirm';
 import { blurIfMouse, byId, el } from '../../ui/dom';
 import { renderSummary } from './summary';
 
@@ -84,8 +85,8 @@ function bindControls(
   volume.oninput = () => { music.setVolume(Number(volume.value)); paintMute(); };
 
   // Reiniciar: descarta o progresso do Modo 1 e volta ao menu
-  byId<HTMLButtonElement>('restart-btn').onclick = () => {
-    if (!confirm('Recomeçar a história do início? O progresso deste modo será perdido.')) return;
+  byId<HTMLButtonElement>('restart-btn').onclick = async () => {
+    if (!(await confirmDialog('Recomeçar a história do início? O progresso deste modo será perdido.', { confirm: 'Recomeçar' }))) return;
     deps.saves.updateCampaign(protagonist.id, c => { delete c.fragmentos; });
     deps.exit();
   };

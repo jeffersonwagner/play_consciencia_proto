@@ -8,6 +8,7 @@
 import type { Protagonist } from '../../content/types';
 import { DEV, EVALUATION_OFF, LOCK_PROGRESSION } from '../core/config';
 import type { Campaign, EspelhoState } from '../core/save';
+import { confirmDialog } from './confirm';
 import { byId, el } from './dom';
 
 export interface HubActions {
@@ -92,7 +93,7 @@ function disabledMode(mode: typeof MODES[number], badge: string): HTMLElement {
   );
 }
 
-const confirmRestart = () => confirm('Começar de novo? O progresso deste modo será perdido.');
+const confirmRestart = () => confirmDialog('Começar de novo? O progresso deste modo será perdido.', { confirm: 'Começar de novo' });
 
 function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonist[], actions: HubActions): void {
   const content = p.fragmentos!;
@@ -113,8 +114,8 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
       }, 'Ver resumo'),
       el('button', {
         className: progress ? 'secondary-button' : 'primary-button',
-        onclick: () => {
-          if (progress && !confirmRestart()) return;
+        onclick: async () => {
+          if (progress && !(await confirmRestart())) return;
           actions.startFragmentos(p, true);
         },
       }, progress ? 'Começar de novo' : 'Iniciar a história'),
@@ -146,8 +147,8 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
         }, 'Ver resumo'),
         ...allies.map(ally => el('button', {
           className: ponte ? 'secondary-button' : 'primary-button',
-          onclick: () => {
-            if (ponte && !confirmRestart()) return;
+          onclick: async () => {
+            if (ponte && !(await confirmRestart())) return;
             actions.startPonte(p, ally, true);
           },
         }, `${ponte ? 'Começar de novo' : 'Iniciar'} como ${p.ponte!.allies[ally].name}`)),
@@ -177,8 +178,8 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
         }, 'Ver resumo'),
         el('button', {
           className: dossie ? 'secondary-button' : 'primary-button',
-          onclick: () => {
-            if (dossie && !confirmRestart()) return;
+          onclick: async () => {
+            if (dossie && !(await confirmRestart())) return;
             actions.startDossie(p, true);
           },
         }, dossie ? 'Começar de novo' : 'Abrir o caso'),
@@ -203,8 +204,8 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
         }, 'Ver relatório'),
         el('button', {
           className: espelho ? 'secondary-button' : 'primary-button',
-          onclick: () => {
-            if (espelho && !confirmRestart()) return;
+          onclick: async () => {
+            if (espelho && !(await confirmRestart())) return;
             actions.startEspelho(true);
           },
         }, espelho ? 'Começar de novo' : 'Olhar o espelho'),

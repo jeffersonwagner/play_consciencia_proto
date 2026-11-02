@@ -10,6 +10,7 @@ import type { ChatLine, PonteAction, PonteAllyContent, PonteContent, PonteOption
 import { assetPath, assetUrl } from '../../core/assets';
 import type { PonteActionId, PonteState, SaveStore } from '../../core/save';
 import type { Telemetry } from '../../core/telemetry';
+import { confirmDialog } from '../../ui/confirm';
 import { byId, el } from '../../ui/dom';
 import { renderPonteSummary } from './summary';
 import {
@@ -223,8 +224,8 @@ class PonteGame {
     });
   }
 
-  private finishWeek(): void {
-    if (this.state.ap > 0 && !confirm(`Você ainda tem ${this.state.ap} PA nesta semana. Encerrar mesmo assim?`)) return;
+  private async finishWeek(): Promise<void> {
+    if (this.state.ap > 0 && !(await confirmDialog(`Você ainda tem ${this.state.ap} PA nesta semana. Encerrar mesmo assim?`, { confirm: 'Encerrar semana' }))) return;
     this.track('week_end', { apLeft: this.state.ap });
     endWeek(this.state);
     this.save();

@@ -11,6 +11,7 @@ import type { DossieAction, DossieContent, DossieContext, Protagonist } from '..
 import { assetPath, assetUrl } from '../../core/assets';
 import type { Campaign, DossieState, SaveStore } from '../../core/save';
 import type { Telemetry } from '../../core/telemetry';
+import { confirmDialog } from '../../ui/confirm';
 import { byId, el } from '../../ui/dom';
 import {
   canAct, concludeClassification, finish, isAvailable, newDossie, pendingEvent,
@@ -318,9 +319,9 @@ class DossieDesk {
     this.render();
   }
 
-  private close(): void {
+  private async close(): Promise<void> {
     const left = this.content.slots.length - this.state.slot;
-    if (!confirm(`Encerrar o caso agora? Ainda restam ${left} período(s).`)) return;
+    if (!(await confirmDialog(`Encerrar o caso agora? Ainda restam ${left} período(s).`, { confirm: 'Encerrar o caso' }))) return;
     finish(this.state);
     this.save();
     this.render();
