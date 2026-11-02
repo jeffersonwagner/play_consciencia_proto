@@ -42,10 +42,10 @@
 
 | # | Inconsistência | Sugestão |
 |---|---|---|
-| G1 | O Modo 1 já termina na Cena 6 (NAE), mas o Modo 2 diz que "ao atingir 100%, a Cena 6 é desbloqueada" | Escolher uma das opções: (a) o Modo 1 termina na Cena 5 e a Cena 6 vira o desfecho do Modo 2; ou (b) a Cena 6 do Modo 1 é a primeira busca de ajuda e o Modo 2 conduz a um "segundo passo" (registro formal), que alimenta o Modo 3. **Recomendo (b)**, porque preserva o protótipo validado |
+| G1 | O Modo 1 já termina na Cena 6 (NAE), mas o Modo 2 diz que "ao atingir 100%, a Cena 6 é desbloqueada" | Escolher uma das opções: (a) o Modo 1 termina na Cena 5 e a Cena 6 vira o desfecho do Modo 2; ou (b) a Cena 6 do Modo 1 é a primeira busca de ajuda e o Modo 2 conduz a um "segundo passo" (registro formal), que alimenta o Modo 3. **Adotado provisoriamente: (b)** — ver [MODO2.md](MODO2.md) |
 | G2 | "Patrícia" é ao mesmo tempo aliada falha (Modo 2) e escrivã (Modo 3) | Renomear uma das duas |
 | G3 | Cartas padronizadas (5): Ciclo, Patrimonial, Gaslighting, Consentimento, Rede de Apoio. Renata exige "Violência Física e Patrimonial", e as etiquetas do Modo 3 incluem Moral, Ameaça, Cárcere Privado e Sexual Conjugal | Criar uma **taxonomia única** (`violence-types`) com IDs estáveis, usada pelo indicador do Modo 1, pelas cartas do Modo 2 e pelas etiquetas do Modo 3. Base: art. 7º da Lei Maria da Penha (física, psicológica, sexual, patrimonial, moral) + subtipos |
-| G4 | No Modo 2 com o **aliado falho** (Lúcia, Patrícia, Beto, Odete, Beatriz), não está claro o papel do jogador | Definir: o jogador controla o aliado falho e o jogo oferece opções "no viés do personagem" e "superando o viés". O desafio é maior (confiança inicial menor, por exemplo 35%) |
+| G4 | No Modo 2 com o **aliado falho** (Lúcia, Patrícia, Beto, Odete, Beatriz), não está claro o papel do jogador | Definir: o jogador controla o aliado falho e o jogo oferece opções "no viés do personagem" e "superando o viés". O desafio é maior (confiança inicial menor). **Adotado provisoriamente**, com confiança inicial de 40% — ver [MODO2.md](MODO2.md) |
 | G5 | O Modo 4 pede de 5 a 7 cenários, mas só 4 estão escritos | Escrever mais 1 a 3 (sugestões: assédio na rua/transporte, piada no trabalho, divisão do cuidado com filhos) |
 | G6 | O Modo 4 pressupõe um jogador homem com parceira ("a parceira assume as tarefas"), mas o público é geral | Formular os cenários na 2ª pessoa e de forma neutra quanto a gênero, ou perguntar o perfil no início e adaptar os textos |
 | G7 | O cap. 4 fala em "protótipo funcional básico **em Unity**" e, logo depois, em "Implementação em HTML5"; o Ciclo 2 diz "Extensão do protótipo em Unity" | Atualizar o texto para HTML5 (ver seção 2) |
@@ -96,7 +96,7 @@ play_consciencia_proto/
 ├─ docs/
 │  ├─ ROADMAP.md                  # este documento
 │  ├─ GUIA_DE_CONTEUDO.md         # como escrever cenas, semanas, casos
-│  └─ BALANCEAMENTO.md            # tabelas de confiança/PA/bem-estar
+│  └─ MODO2.md                    # regras e balanceamento do Modo 2
 ├─ public/assets/                 # servidos como estão
 │  ├─ fonts/
 │  ├─ audio/music/  audio/sfx/
@@ -176,15 +176,15 @@ O cronograma da qualificação previa a coleta do Ciclo 1 (Modos 1, 2 e 3) em no
 - **Entrega:** a Júlia no Modo 1 roda igual ao protótipo atual, agora sobre a nova base
 
 ### Fase 1 — Modo 2 "A Ponte", Júlia (09/11 a 23/11)
-- [ ] Resolver G1 e G4 no GDD
-- [ ] Interface de celular: tela inicial com Contatos, Mensagens, Calendário e app "A Ponte"
-- [ ] Medidor de Confiança circular (começando em 50%) e regras de variação
-- [ ] Pontos de Ação: 3 por semana; mensagem = 1, ligação = 2, visita = 3, pesquisa = 1
-- [ ] Ciclo de 4 semanas com eventos do agressor (tensão / lua de mel)
-- [ ] Cartas de Conhecimento: desbloqueio via pesquisa; "carta necessária" para a ação de vitória
-- [ ] Roteiros: Carla (eficaz) e Lúcia (falha), semanas 1 a 4
-- [ ] Finais: 100% / intermediário / 0% ("Preciso de um tempo…")
-- [ ] Tabela de balanceamento em `docs/BALANCEAMENTO.md` + testes unitários
+- [x] Resolver G1 e G4 no GDD (decisões provisórias em [MODO2.md](MODO2.md))
+- [x] Interface de celular: tela inicial com Contatos, Mensagens, Calendário, Cartas e app "A Ponte"
+- [x] Medidor de Confiança circular (50% Carla, 40% Lúcia) e regras de variação
+- [x] Pontos de Ação: 3 por semana; mensagem = 1, ligação = 2, visita = 3, pesquisa = 1
+- [x] Ciclo de 4 semanas com eventos do agressor (tensão / lua de mel)
+- [x] Cartas de Conhecimento (5, rascunho): desbloqueio via pesquisa; "carta necessária" para a ação de vitória
+- [x] Roteiros: Carla (eficaz) e Lúcia (falha), semanas 1 a 4 — **rascunho para revisão**
+- [x] Finais: 100% / intermediário / 0% ("Preciso de um tempo…") + resumo com retorno pedagógico
+- [x] Balanceamento em [MODO2.md](MODO2.md) + testes (inclui verificação automática de que o final positivo exige a carta)
 - **Entrega:** a Júlia jogável de ponta a ponta nos Modos 1→2
 
 ### Fase 2 — Modo 3 "Dossiê 180", Júlia (23/11 a 05/12)

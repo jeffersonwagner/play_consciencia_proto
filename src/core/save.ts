@@ -31,9 +31,47 @@ export interface FragmentosState {
   completed: boolean;
 }
 
+export type PonteActionId = 'mensagem' | 'ligacao' | 'visita' | 'pesquisa';
+
+/** Mensagem exibida no histórico do celular. */
+export interface PonteChatEntry {
+  from: 'protagonista' | 'jogador' | 'narrador';
+  text: string;
+  week: number;
+  channel: PonteActionId | 'evento' | 'final';
+}
+
+/** Uma resposta dada pelo jogador, para o resumo e para a pesquisa. */
+export interface PonteLogEntry {
+  week: number;
+  action: PonteActionId;
+  choice: string;
+  delta: number;
+  trustAfter: number;
+  feedback: string;
+}
+
+export interface PonteState {
+  ally: string;
+  trust: number;
+  /** Semana atual, a partir de 0. */
+  week: number;
+  ap: number;
+  /** Ações já usadas na semana atual. */
+  used: PonteActionId[];
+  cards: string[];
+  chat: PonteChatEntry[];
+  log: PonteLogEntry[];
+  /** Confiança ao fim de cada semana encerrada. */
+  trustByWeek: number[];
+  victory: boolean;
+  ending: 'positivo' | 'neutro' | 'negativo' | null;
+}
+
 export interface Campaign {
   protagonist: string;
   fragmentos?: FragmentosState;
+  ponte?: PonteState;
 }
 
 export interface SaveData {

@@ -14,6 +14,8 @@ export interface HubActions {
   campaign(id: string): Campaign;
   startFragmentos(p: Protagonist, fresh: boolean): void;
   showFragmentosSummary(p: Protagonist): void;
+  startPonte(p: Protagonist, ally: string, fresh: boolean): void;
+  showPonteSummary(p: Protagonist): void;
 }
 
 const MODES = [
@@ -60,45 +62,90 @@ function showProtagonists(screen: HTMLElement, protagonists: Protagonist[], acti
   screen.scrollTop = 0;
 }
 
+function modeInfo(mode: typeof MODES[number]): HTMLElement {
+  return el('div', { className: 'hub-mode-info' },
+    el('span', { className: 'hub-mode-name' }, `Modo ${mode.n} — ${mode.name}`),
+    el('span', { className: 'hub-mode-perspective' }, mode.perspective),
+  );
+}
+
+function disabledMode(mode: typeof MODES[number], badge: string): HTMLElement {
+  return el('div', { className: 'hub-mode hub-mode-disabled' },
+    modeInfo(mode),
+    el('span', { className: 'hub-card-badge' }, badge),
+  );
+}
+
+const confirmRestart = () => confirm('Começar de novo? O progresso deste modo será perdido.');
+
 function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonist[], actions: HubActions): void {
   const content = p.fragmentos!;
-  const progress = actions.campaign(p.id).fragmentos;
+  const campaign = actions.campaign(p.id);
+  const progress = campaign.fragmentos;
 
-  const modeRows = MODES.map(mode => {
-    if (mode.n === 1) {
-      return el('div', { className: 'hub-mode' },
-        el('div', { className: 'hub-mode-info' },
-          el('span', { className: 'hub-mode-name' }, `Modo 1 — ${mode.name}`),
-          el('span', { className: 'hub-mode-perspective' }, mode.perspective),
-        ),
-        el('div', { className: 'hub-mode-actions' },
-          progress && !progress.completed && el('button', {
-            className: 'primary-button',
-            onclick: () => actions.startFragmentos(p, false),
-          }, 'Continuar de onde parei'),
-          progress?.completed && el('button', {
-            className: 'primary-button',
-            onclick: () => actions.showFragmentosSummary(p),
-          }, 'Ver resumo'),
-          el('button', {
-            className: progress ? 'secondary-button' : 'primary-button',
-            onclick: () => {
-              if (progress && !confirm('Começar de novo? O progresso deste modo será perdido.')) return;
-              actions.startFragmentos(p, true);
-            },
-          }, progress ? 'Começar de novo' : 'Iniciar a história'),
-        ),
-      );
-    }
-    const locked = LOCK_PROGRESSION && !progress?.completed;
-    return el('div', { className: 'hub-mode hub-mode-disabled' },
-      el('div', { className: 'hub-mode-info' },
-        el('span', { className: 'hub-mode-name' }, `Modo ${mode.n} — ${mode.name}`),
-        el('span', { className: 'hub-mode-perspective' }, mode.perspective),
+  // Modo 1
+  const modo1 = el('div', { className: 'hub-mode' },
+    modeInfo(MODES[0]),
+    el('div', { className: 'hub-mode-actions' },
+      progress && !progress.completed && el('button', {
+        className: 'primary-button',
+        onclick: () => actions.startFragmentos(p, false),
+      }, 'Continuar de onde parei'),
+      progress?.completed && el('button', {
+        className: 'primary-button',
+        onclick: () => actions.showFragmentosSummary(p),
+      }, 'Ver resumo'),
+      el('button', {
+        className: progress ? 'secondary-button' : 'primary-button',
+        onclick: () => {
+          if (progress && !confirmRestart()) return;
+          actions.startFragmentos(p, true);
+        },
+      }, progress ? 'Começar de novo' : 'Iniciar a história'),
+    ),
+  );
+
+  // Modo 2: o aliado vem da Cena 5 do Modo 1. No modo dev, sem o Modo 1
+  // concluído, dá para escolher qualquer aliado para testar.
+  const allyFromModo1 = progress?.completed ? progress.ally : null;
+  const ponte = campaign.ponte;
+  let modo2: HTMLElement;
+  if (!p.ponte) {
+    modo2 = disabledMode(MODES[1], 'Em desenvolvimento');
+  } else if (LOCK_PROGRESSION && !allyFromModo1) {
+    modo2 = disabledMode(MODES[1], 'Conclua o Modo 1');
+  } else {
+    const allies = allyFromModo1 ? [allyFromModo1] : Object.keys(p.ponte.allies);
+    const canResume = ponte && ponte.ending === null && allies.includes(ponte.ally);
+    modo2 = el('div', { className: 'hub-mode' },
+      modeInfo(MODES[1]),
+      el('div', { className: 'hub-mode-actions' },
+        canResume && el('button', {
+          className: 'primary-button',
+          onclick: () => actions.startPonte(p, ponte.ally, false),
+        }, 'Continuar de onde parei'),
+        ponte?.ending && el('button', {
+          className: 'primary-button',
+          onclick: () => actions.showPonteSummary(p),
+        }, 'Ver resumo'),
+        ...allies.map(ally => el('button', {
+          className: ponte ? 'secondary-button' : 'primary-button',
+          onclick: () => {
+            if (ponte && !confirmRestart()) return;
+            actions.startPonte(p, ally, true);
+          },
+        }, `${ponte ? 'Começar de novo' : 'Iniciar'} como ${p.ponte!.allies[ally].name}`)),
       ),
-      el('span', { className: 'hub-card-badge' }, locked ? 'Conclua o Modo 1' : 'Em desenvolvimento'),
     );
-  });
+  }
+
+  const modo2Done = Boolean(ponte?.ending);
+  const modeRows = [
+    modo1,
+    modo2,
+    disabledMode(MODES[2], LOCK_PROGRESSION && !modo2Done ? 'Conclua o Modo 2' : 'Em desenvolvimento'),
+    disabledMode(MODES[3], 'Em desenvolvimento'),
+  ];
 
   screen.replaceChildren(
     ...header(p.name),

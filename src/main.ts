@@ -14,6 +14,7 @@ import './styles/vn.css';
 import './styles/screens.css';
 import './styles/hub.css';
 import './styles/safety.css';
+import './styles/phone.css';
 import './styles/print.css';
 
 import { protagonists } from '../content/protagonists';
@@ -22,6 +23,7 @@ import { SaveStore } from './core/save';
 import { browserStore } from './core/storage';
 import { Telemetry } from './core/telemetry';
 import { showFragmentosSummary, startFragmentos, type FragmentosDeps } from './modes/fragmentos';
+import { showPonteSummary, startPonte } from './modes/ponte';
 import { byId } from './ui/dom';
 import { renderHub } from './ui/hub';
 import { mountSafetyBar } from './ui/safety';
@@ -47,6 +49,14 @@ renderHub(protagonists, {
   showFragmentosSummary: p => {
     byId('hub-screen').classList.add('hidden');
     showFragmentosSummary(p, deps);
+  },
+  startPonte: (p, ally, fresh) => {
+    byId('hub-screen').classList.add('hidden');
+    startPonte(p, ally, fresh, deps);
+  },
+  showPonteSummary: p => {
+    byId('hub-screen').classList.add('hidden');
+    showPonteSummary(p, deps);
   },
 });
 
