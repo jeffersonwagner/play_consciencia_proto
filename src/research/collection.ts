@@ -62,7 +62,9 @@ export function parseConfig(raw: unknown): CollectionConfig | null {
     ciclo: Number(r.ciclo) === 2 ? 2 : 1,
     mensagem: r.mensagem ? String(r.mensagem) : undefined,
   };
-  return parseDay(config.inicio) && parseDay(config.fim) ? config : null;
+  // Sem datas válidas a configuração ainda vale: desligada, o jogo abre
+  // direto; ligada, collectionStatus() a trata como indisponível
+  return config;
 }
 
 export interface CachedConfig {

@@ -50,7 +50,9 @@ describe('período da coleta', () => {
     // Planilha em pt-BR pode transformar "1,2,3" em número com ponto
     expect(parseConfig({ ativa: 'SIM', inicio: '2026-12-01', fim: '2026-12-15', modos: '1.2.3' })?.modos).toEqual([1, 2, 3]);
     expect(parseConfig({ ativa: 'NÃO', inicio: '2026-12-01', fim: '2026-12-15' })?.ativa).toBe(false);
-    expect(parseConfig({ ativa: 'SIM', inicio: '', fim: '' })).toBeNull();
+    // Desligada sem datas abre o jogo direto; ligada sem datas não coleta
+    expect(collectionStatus(parseConfig({ ativa: 'NÃO', inicio: '', fim: '' }))).toBe('inativa');
+    expect(collectionStatus(parseConfig({ ativa: 'SIM', inicio: '', fim: '' }))).toBe('indisponivel');
   });
 
   it('sem internet, usa a última configuração guardada', async () => {

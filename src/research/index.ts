@@ -176,7 +176,7 @@ class ResearchApp {
     const text: Record<Exclude<CollectionStatus, 'aberta' | 'inativa'>, string> = {
       antes: `A coleta de dados da pesquisa começa em ${formatDay(this.config?.inicio ?? '')}.`,
       encerrada: `A coleta de dados da pesquisa foi encerrada em ${formatDay(this.config?.fim ?? '')}. Obrigado a quem participou!`,
-      indisponivel: 'Não foi possível verificar a coleta de dados (sem conexão com a internet). Você pode jogar normalmente; nenhum dado será registrado.',
+      indisponivel: 'Não foi possível verificar a coleta de dados (sem conexão ou período não configurado). Você pode jogar normalmente; nenhum dado será registrado.',
     };
     this.page(
       el('div', { className: 'title-eyebrow' }, 'Pesquisa'),
