@@ -12,6 +12,7 @@ import type { Telemetry } from '../../core/telemetry';
 import { VNEngine } from '../../engine/vn/VNEngine';
 import { confirmDialog } from '../../ui/confirm';
 import { blurIfMouse, byId, el } from '../../ui/dom';
+import { bindSummaryActions as bindSummary } from '../../ui/summaryActions';
 import { renderSummary } from './summary';
 
 export interface FragmentosDeps {
@@ -19,6 +20,11 @@ export interface FragmentosDeps {
   telemetry: Telemetry;
   /** Volta ao menu inicial. */
   exit(): void;
+  /**
+   * Segue direto para outro modo da mesma protagonista. Ausente (ou modo
+   * fora da avaliação em curso) esconde o botão de continuar.
+   */
+  continueTo?: { allowed(mode: number): boolean; go(mode: number, protagonist: Protagonist): void };
 }
 
 /** Inicia o Modo 1. `fresh` descarta o progresso salvo da protagonista. */
@@ -37,6 +43,8 @@ export function startFragmentos(protagonist: Protagonist, fresh: boolean, deps: 
     onChange: s => { deps.saves.updateCampaign(protagonist.id, c => { c.fragmentos = s; }); },
     onEnd: s => {
       music.stop();
+      // Religa os botões agora que o aliado do Modo 2 é conhecido
+      bindSummaryActions(protagonist, deps);
       renderSummary(protagonist, s);
     },
     onEvent: (type, data) => deps.telemetry.track(`fragmentos.${type}`, { protagonist: protagonist.id, ...data }),
@@ -58,11 +66,18 @@ export function showFragmentosSummary(protagonist: Protagonist, deps: Fragmentos
 }
 
 function bindSummaryActions(protagonist: Protagonist, deps: FragmentosDeps): void {
-  byId('summary-restart').onclick = () => {
-    deps.saves.updateCampaign(protagonist.id, c => { delete c.fragmentos; });
-    deps.exit();
-  };
-  byId('summary-menu').onclick = () => deps.exit();
+  const state = deps.saves.campaign(protagonist.id).fragmentos;
+  const ally = state?.completed && state.ally ? protagonist.ponte?.allies[state.ally] : undefined;
+  bindSummary({
+    restart: () => {
+      deps.saves.updateCampaign(protagonist.id, c => { delete c.fragmentos; });
+      deps.exit();
+    },
+    menu: () => deps.exit(),
+    next: ally && deps.continueTo?.allowed(2)
+      ? { label: `Continuar no Modo 2 como ${ally.name} →`, go: () => deps.continueTo!.go(2, protagonist) }
+      : undefined,
+  });
 }
 
 function bindControls(

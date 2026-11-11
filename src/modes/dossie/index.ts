@@ -7,12 +7,13 @@
 
 import { findProfessional } from '../../../content/shared/professionals';
 import { violenceTypes } from '../../../content/shared/violence-types';
-import type { DossieAction, DossieContent, DossieContext, Protagonist } from '../../../content/types';
+import type { DossieAction, DossieContent, DossieContext, DossieDocument, Protagonist } from '../../../content/types';
 import { assetPath, assetUrl } from '../../core/assets';
 import type { Campaign, DossieState, SaveStore } from '../../core/save';
 import type { Telemetry } from '../../core/telemetry';
 import { confirmDialog } from '../../ui/confirm';
 import { byId, el } from '../../ui/dom';
+import { bindSummaryActions as bindSummary } from '../../ui/summaryActions';
 import {
   canAct, concludeClassification, finish, isAvailable, newDossie, pendingEvent,
   performAction, resolveEvent, startingWellbeing, toggleTag, wait,
@@ -59,11 +60,13 @@ export function showDossieSummary(protagonist: Protagonist, deps: DossieDeps): v
 }
 
 function bindSummaryActions(protagonist: Protagonist, deps: DossieDeps): void {
-  byId('summary-restart').onclick = () => {
-    deps.saves.updateCampaign(protagonist.id, c => { delete c.dossie; });
-    deps.exit();
-  };
-  byId('summary-menu').onclick = () => deps.exit();
+  bindSummary({
+    restart: () => {
+      deps.saves.updateCampaign(protagonist.id, c => { delete c.dossie; });
+      deps.exit();
+    },
+    menu: () => deps.exit(),
+  });
 }
 
 class DossieDesk {
@@ -180,8 +183,7 @@ class DossieDesk {
         ...this.content.relato(this.ctx).map(t => el('p', {}, t))),
       el('div', { className: 'dossier-section' },
         el('h3', {}, 'Documentos'),
-        el('div', { className: 'dossier-docs' }, ...this.content.documents(this.ctx).map(d =>
-          el('div', { className: 'dossier-doc' }, el('strong', {}, d.title), el('span', {}, d.body))))),
+        el('div', { className: 'dossier-docs' }, ...this.content.documents(this.ctx).map(documentCard))),
       el('div', { className: 'dossier-section' },
         el('h3', {}, 'Classificação'),
         drop),
@@ -414,4 +416,37 @@ function proAvatar(name: string, sprite?: string): HTMLElement {
   }
   const initials = name.replace(/^(Dr\.|Dra\.|Escrivã|Delegado)\s+/, '').slice(0, 1);
   return el('div', { className: 'phone-avatar sm pro-initials' }, initials);
+}
+
+/** Documento do dossiê com a aparência do que ele é (foto, print, ficha, notificação). */
+function documentCard(d: DossieDocument): HTMLElement {
+  const label = el('strong', { className: 'dossier-doc-title' }, d.title);
+  switch (d.kind) {
+    case 'foto':
+      return el('figure', { className: 'dossier-doc doc-foto' },
+        d.image
+          ? el('img', { src: assetUrl(assetPath.document(d.image)), alt: d.body })
+          // Sem a arte, um quadro no formato da foto com a descrição
+          : el('div', { className: 'doc-foto-placeholder', role: 'img', ariaLabel: d.body }, '📷'),
+        el('figcaption', {}, label, el('span', {}, d.body)));
+    case 'print':
+      return el('div', { className: 'dossier-doc doc-print' },
+        label,
+        el('div', { className: 'doc-print-screen' },
+          el('div', { className: 'doc-print-header' }, d.from ?? ''),
+          el('div', { className: 'doc-print-bubble' }, d.body.replace(/^"|"$/g, ''))));
+    case 'ficha':
+      return el('div', { className: 'dossier-doc doc-ficha' },
+        el('div', { className: 'doc-ficha-header' }, label, el('span', { className: 'doc-ficha-stamp' }, 'Confidencial')),
+        el('p', { className: 'doc-ficha-body' }, d.body));
+    case 'notificacao':
+      return el('div', { className: 'dossier-doc doc-notificacao' },
+        label,
+        el('div', { className: 'doc-notificacao-card' },
+          el('span', { className: 'doc-notificacao-app' }, '💬 Mensagens · agora'),
+          el('strong', {}, d.from ?? ''),
+          el('span', {}, d.body.replace(/^"|"$/g, ''))));
+    default:
+      return el('div', { className: 'dossier-doc' }, label, el('span', {}, d.body));
+  }
 }

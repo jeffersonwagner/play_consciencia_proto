@@ -131,7 +131,14 @@ export interface DossieContext {
 
 export interface DossieDocument {
   title: string;
+  /** Texto do documento (na foto: a descrição, usada como legenda e texto alternativo). */
   body: string;
+  /** Aparência no dossiê; sem ela, um papel com o texto. */
+  kind?: 'foto' | 'print' | 'ficha' | 'notificacao';
+  /** Foto: arte em public/assets/documents/<id>.webp. Sem ela, um quadro com a descrição. */
+  image?: string;
+  /** Print e notificação: quem enviou a mensagem. */
+  from?: string;
 }
 
 export interface DossieOutcome {

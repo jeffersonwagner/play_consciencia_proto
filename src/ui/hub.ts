@@ -1,6 +1,6 @@
 // ============================================================
 // MENU INICIAL (HUB)
-// 1º passo: escolher a protagonista. 2º passo: escolher o modo.
+// 1º passo: escolher a protagonista (ou o Modo 4, extra). 2º passo: escolher o modo.
 // Protagonistas sem conteúdo aparecem como "em produção"; modos ainda
 // não implementados aparecem como "em desenvolvimento".
 // ============================================================
@@ -71,9 +71,17 @@ function showProtagonists(screen: HTMLElement, protagonists: Protagonist[], acti
     );
   });
 
+  // Modo 4 é um extra do jogo, fora das histórias (na avaliação, só se fizer parte do ciclo)
+  const extras = !actions.modes || actions.modes.includes(4)
+    ? [el('section', { className: 'hub-extras' },
+      el('div', { className: 'hub-extras-label' }, 'Extra'),
+      espelhoRow(actions))]
+    : [];
+
   screen.replaceChildren(
     ...header('Escolha uma história'),
     el('div', { className: 'hub-grid' }, ...cards),
+    ...extras,
     ...footerOf(actions),
   );
   screen.scrollTop = 0;
@@ -90,6 +98,32 @@ function disabledMode(mode: typeof MODES[number], badge: string): HTMLElement {
   return el('div', { className: 'hub-mode hub-mode-disabled' },
     modeInfo(mode),
     el('span', { className: 'hub-card-badge' }, badge),
+  );
+}
+
+/** Modo 4 — O Espelho: global, o mesmo para todas as protagonistas. */
+function espelhoRow(actions: HubActions): HTMLElement {
+  const espelho = actions.espelho();
+  if (LOCK_PROGRESSION && !actions.anyDossieDone()) return disabledMode(MODES[3], 'Conclua o Modo 3 de uma história');
+  return el('div', { className: 'hub-mode' },
+    modeInfo(MODES[3]),
+    el('div', { className: 'hub-mode-actions' },
+      espelho && !espelho.completed && el('button', {
+        className: 'primary-button',
+        onclick: () => actions.startEspelho(false),
+      }, 'Continuar de onde parei'),
+      espelho?.completed && el('button', {
+        className: 'primary-button',
+        onclick: () => actions.showEspelhoReport(),
+      }, 'Ver relatório'),
+      el('button', {
+        className: espelho ? 'secondary-button' : 'primary-button',
+        onclick: async () => {
+          if (espelho && !(await confirmRestart())) return;
+          actions.startEspelho(true);
+        },
+      }, espelho ? 'Começar de novo' : 'Olhar o espelho'),
+    ),
   );
 }
 
@@ -187,33 +221,8 @@ function showModes(screen: HTMLElement, p: Protagonist, protagonists: Protagonis
     );
   }
 
-  // Modo 4: global (o mesmo para todas as protagonistas)
-  const espelho = actions.espelho();
-  const modo4 = LOCK_PROGRESSION && !actions.anyDossieDone()
-    ? disabledMode(MODES[3], 'Conclua o Modo 3')
-    : el('div', { className: 'hub-mode' },
-      modeInfo(MODES[3]),
-      el('div', { className: 'hub-mode-actions' },
-        espelho && !espelho.completed && el('button', {
-          className: 'primary-button',
-          onclick: () => actions.startEspelho(false),
-        }, 'Continuar de onde parei'),
-        espelho?.completed && el('button', {
-          className: 'primary-button',
-          onclick: () => actions.showEspelhoReport(),
-        }, 'Ver relatório'),
-        el('button', {
-          className: espelho ? 'secondary-button' : 'primary-button',
-          onclick: async () => {
-            if (espelho && !(await confirmRestart())) return;
-            actions.startEspelho(true);
-          },
-        }, espelho ? 'Começar de novo' : 'Olhar o espelho'),
-      ),
-    );
-
   // Na avaliação, só os modos do ciclo aparecem no menu
-  const modeRows = [modo1, modo2, modo3, modo4].filter((_, i) => !actions.modes || actions.modes.includes(i + 1));
+  const modeRows = [modo1, modo2, modo3].filter((_, i) => !actions.modes || actions.modes.includes(i + 1));
 
   screen.replaceChildren(
     ...header(p.name),

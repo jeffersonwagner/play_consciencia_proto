@@ -119,3 +119,13 @@
 .hub-mode-actions .primary-button { margin-bottom: 4px; }
 
 .hub-back { margin-top: 28px; }
+
+/* Extra (Modo 4): fora das histórias, abaixo dos cards */
+.hub-extras { width: min(900px, 100%); margin-top: 28px; display: flex; flex-direction: column; gap: 10px; }
+
+.hub-extras-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}

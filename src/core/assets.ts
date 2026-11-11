@@ -6,6 +6,7 @@ export const assetPath = {
   sprite: (id: string) => `assets/characters/${id}.webp`,
   background: (id: string) => `assets/backgrounds/${id}.webp`,
   music: (id: string) => `assets/audio/music/${id}.mp3`,
+  document: (id: string) => `assets/documents/${id}.webp`,
 };
 
 /** URL pública do asset, respeitando o `base` do Vite. */

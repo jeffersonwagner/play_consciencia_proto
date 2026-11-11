@@ -155,6 +155,80 @@
 
 .dossier-doc strong { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #8a6020; }
 
+/* Documentos com aparência própria */
+.dossier-doc-title { display: block; }
+
+.doc-foto { margin: 0; padding: 10px 10px 12px; background: #f6f2ea; transform: rotate(-1.2deg); }
+.doc-foto img, .doc-foto-placeholder { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+
+.doc-foto-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  background: repeating-linear-gradient(45deg, #d9d1c3, #d9d1c3 8px, #d1c8b8 8px, #d1c8b8 16px);
+  opacity: 0.85;
+}
+
+.doc-foto figcaption { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; font-family: var(--serif); font-style: italic; font-size: 14px; }
+.doc-foto figcaption strong { font-family: var(--sans); font-style: normal; }
+
+.doc-print { background: #e9e6ef; }
+.doc-print-screen { background: #1a1722; border-radius: 12px; padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 6px; }
+.doc-print-header { font-size: 12px; font-weight: 600; color: #f0e9dc; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 4px; }
+
+.doc-print-bubble {
+  align-self: flex-start;
+  max-width: 92%;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  background: #2c2735;
+  color: #f0e9dc;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.doc-ficha {
+  background:
+    repeating-linear-gradient(transparent, transparent 21px, rgba(43, 38, 32, 0.12) 21px, rgba(43, 38, 32, 0.12) 22px),
+    #f3eee3;
+}
+
+.doc-ficha-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 2px solid #8a6020; padding-bottom: 6px; }
+
+.doc-ficha-stamp {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #a0362f;
+  border: 2px solid #a0362f;
+  border-radius: 4px;
+  padding: 1px 6px;
+  transform: rotate(-6deg);
+  opacity: 0.8;
+}
+
+.doc-ficha-body { font-family: 'Courier New', monospace; font-size: 12.5px; line-height: 22px; margin-top: 4px; }
+
+.doc-notificacao { background: #e9e6ef; }
+
+.doc-notificacao-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(26, 23, 34, 0.92);
+  color: #f0e9dc;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.doc-notificacao-card .doc-notificacao-app { font-size: 11px; color: #a69fb2; }
+.doc-notificacao-card strong { font-size: 13px; letter-spacing: 0; text-transform: none; color: #f0e9dc; }
+
 .tag-drop {
   min-height: 56px;
   display: flex;

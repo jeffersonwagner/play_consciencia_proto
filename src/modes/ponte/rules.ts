@@ -35,6 +35,21 @@ export function newPonte(ally: string, startTrust: number): PonteState {
   };
 }
 
+/** Tempo para responder na ligação; depois dele, o silêncio vira a resposta. */
+export const CALL_ANSWER_SECONDS = 30;
+/** Efeito do silêncio na ligação (sem resposta a tempo ou desligar sem responder). */
+export const CALL_SILENCE_DELTA = -4;
+
+/** "Resposta" registrada quando o jogador não responde a ligação a tempo. */
+export function silenceOption(protagonistName: string): PonteOption {
+  return {
+    text: '(silêncio)',
+    replies: [{ from: 'narrador', text: `Silêncio na linha. ${protagonistName} espera alguns segundos e encerra a ligação.` }],
+    delta: CALL_SILENCE_DELTA,
+    feedback: 'Na ligação, a resposta precisa vir na hora. Ficar em silêncio num momento difícil pode soar como desinteresse, mesmo sem intenção.',
+  };
+}
+
 export function canDo(state: PonteState, action: PonteActionId): boolean {
   return state.ending === null && !state.used.includes(action) && state.ap >= ACTION_COST[action];
 }

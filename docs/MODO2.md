@@ -33,6 +33,20 @@
    (≈ 0) e uma **prejudicial**. Depois de responder, aparece um retorno pedagógico curto.
 5. **Ação de vitória** (semana 4, na ligação ou na visita): só aparece se a carta exigida
    (Júlia: *Violência Patrimonial*) tiver sido desbloqueada. Vale **+25**.
+6. **Ligação com tempo:** as falas aparecem em legenda, uma por vez, e as opções vêm com
+   **30 segundos** para responder. Sem resposta a tempo (ou desligando antes), o **silêncio**
+   conta como resposta: **−4** e um retorno sobre o peso do silêncio. *(Texto do silêncio e
+   valor provisórios, a revisar.)*
+
+## Interface
+
+- **Celular:** só o que um telefone teria. Tela inicial com a notificação da semana e os apps
+  Calendário, Contatos e Cartas; **barra de baixo** com as ações: Mensagens (1 PA), Telefone
+  (2 PA), Café (3 PA) e Navegador (1 PA). Mensagens abre a conversa inteira, com as respostas
+  da semana logo abaixo; abrir não gasta PA, só responder.
+- **Fora do aparelho:** acima, o título e a fase da semana; ao lado (abaixo, em telas
+  estreitas), a foto da protagonista com o medidor de confiança, a frase da semana, os PA, o
+  atalho de Cartas e o botão "Encerrar semana".
 
 ## Fim do modo
 

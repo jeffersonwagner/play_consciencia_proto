@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { PonteOption } from '../content/types';
 import {
-  ACTION_COST, AP_PER_WEEK, WEEKS,
-  applyOption, canDo, endWeek, newPonte, spend, unlockCard, visibleOptions,
+  ACTION_COST, AP_PER_WEEK, CALL_SILENCE_DELTA, WEEKS,
+  applyOption, canDo, endWeek, newPonte, silenceOption, spend, unlockCard, visibleOptions,
 } from '../src/modes/ponte/rules';
 
 const opt = (delta: number, extra: Partial<PonteOption> = {}): PonteOption =>
@@ -63,5 +63,17 @@ describe('Confiança e finais', () => {
     unlockCard(s, 'violencia-patrimonial');
     expect(s.cards).toEqual(['violencia-patrimonial']);
     expect(visibleOptions(options, s.cards)).toHaveLength(2);
+  });
+});
+
+describe('Ligação sem resposta', () => {
+  it('o silêncio conta como resposta: reduz a confiança e fica no histórico', () => {
+    const s = newPonte('carla', 50);
+    spend(s, 'ligacao');
+    applyOption(s, 'ligacao', silenceOption('Júlia'));
+    expect(CALL_SILENCE_DELTA).toBeLessThan(0);
+    expect(s.trust).toBe(50 + CALL_SILENCE_DELTA);
+    expect(s.log.at(-1)).toMatchObject({ action: 'ligacao', choice: '(silêncio)' });
+    expect(silenceOption('Júlia').replies[0].text).toContain('Júlia');
   });
 });

@@ -54,8 +54,12 @@
      MODO 2 — CELULAR (src/modes/ponte)
 ============================================================ -->
 <div id="ponte-screen" class="hidden">
-  <div class="phone">
-    <div id="phone-screen"></div>
+  <div class="ponte-layout">
+    <header id="ponte-top" class="ponte-top"></header>
+    <div class="phone">
+      <div id="phone-screen"></div>
+    </div>
+    <aside id="ponte-side" class="ponte-side" hidden></aside>
   </div>
 </div>
 
@@ -84,6 +88,7 @@
   <div class="summary-content" id="summary-content"></div>
 
   <div class="summary-actions">
+    <button class="primary-button" id="summary-next" hidden></button>
     <button class="primary-button" id="summary-restart">Recomeçar</button>
     <button class="secondary-button" onclick="window.print()">Imprimir resumo</button>
     <button class="secondary-button" id="summary-menu">Voltar ao menu</button>

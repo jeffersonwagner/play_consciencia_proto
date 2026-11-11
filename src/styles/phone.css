@@ -4,10 +4,8 @@
   position: fixed;
   inset: 0;
   z-index: 60;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 56px 16px 16px;
+  overflow-y: auto;
+  padding: 56px 16px 24px;
   background:
     radial-gradient(ellipse at 30% 20%, rgba(201, 165, 92, 0.10), transparent 55%),
     radial-gradient(ellipse at 80% 90%, rgba(184, 93, 93, 0.10), transparent 50%),
@@ -16,9 +14,53 @@
 
 #ponte-screen.hidden { display: none; }
 
+.ponte-layout {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 400px) 260px;
+  grid-template-areas: "top top" "phone side";
+  justify-content: center;
+  align-content: center;
+  gap: 16px 32px;
+}
+
+/* Na introdução não há painel: o celular fica centralizado */
+.ponte-layout:has(.ponte-side[hidden]) {
+  grid-template-columns: minmax(0, 400px);
+  grid-template-areas: "top" "phone";
+}
+
+.ponte-top { grid-area: top; text-align: center; }
+.ponte-top .title-eyebrow { margin-bottom: 6px; }
+.ponte-top-title { font-family: var(--serif); font-weight: 500; font-size: clamp(24px, 3.2vw, 32px); }
+
+.ponte-top-phase {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #e8b8b8;
+  margin-top: 4px;
+}
+
+.ponte-side { grid-area: side; align-self: center; display: flex; flex-direction: column; gap: 14px; }
+.ponte-side[hidden] { display: none; }
+.ponte-side .primary-button, .ponte-side .secondary-button { min-width: 0; width: 100%; margin: 0; }
+
+.ponte-side-ap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
 .phone {
-  width: min(400px, 100%);
-  height: min(780px, 100%);
+  grid-area: phone;
+  width: 100%;
+  /* Cabe com o título acima numa tela de notebook (768 px de altura) */
+  height: min(720px, calc(100dvh - 220px));
+  min-height: 520px;
   display: flex;
   flex-direction: column;
   background: #121017;
@@ -39,9 +81,20 @@
   overflow: hidden;
 }
 
+/* Telas estreitas: título, celular e painel empilhados, com rolagem */
+@media (max-width: 760px) {
+  .ponte-layout, .ponte-layout:has(.ponte-side[hidden]) {
+    grid-template-columns: minmax(0, 400px);
+    grid-template-areas: "top" "phone" "side";
+    align-content: start;
+  }
+  .phone { height: min(720px, calc(100dvh - 140px)); min-height: 480px; }
+}
+
 @media (max-width: 480px) {
-  #ponte-screen { padding: 52px 0 0; }
-  .phone { border-radius: 0; height: 100%; padding: 0; box-shadow: none; border: none; }
+  #ponte-screen { padding: 52px 0 16px; }
+  .ponte-top, .ponte-side { padding: 0 16px; }
+  .phone { border-radius: 0; padding: 0; box-shadow: none; border: none; }
   #phone-screen { border-radius: 0; }
 }
 
@@ -154,20 +207,23 @@
 .phone-intro .primary-button { min-width: 0; }
 
 /* Tela inicial */
-.phone-home-clock { text-align: center; padding: 24px 0 12px; }
+.phone-home { justify-content: flex-start; }
 
-.phone-home-week {
-  font-family: var(--serif);
-  font-size: 34px;
+.phone-notification {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  padding: 10px 12px;
+  background: rgba(44, 39, 53, 0.9);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  animation: bubbleIn 0.3s ease;
 }
 
-.phone-home-phase {
-  font-size: 12px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #e8b8b8;
-  margin-top: 6px;
-}
+.phone-notification-text { display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.4; min-width: 0; }
+.phone-notification-text span { color: var(--text-muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
 .phone-apps {
   display: grid;
@@ -192,14 +248,29 @@
   transition: transform 0.2s ease;
 }
 
-.phone-app.highlight .phone-app-icon {
-  background: linear-gradient(135deg, rgba(201, 165, 92, 0.45), rgba(201, 165, 92, 0.12));
-  border-color: var(--accent);
-}
-
 .phone-app:hover .phone-app-icon { transform: scale(1.06); }
 
 .phone-app-name { font-size: 12px; color: var(--text-primary); }
+
+.phone-dock {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin: 0 10px 10px;
+  padding: 10px 4px 8px;
+  background: rgba(42, 37, 50, 0.75);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+}
+
+.dock-app { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dock-app .phone-app-icon { width: 54px; height: 54px; font-size: 26px; border-radius: 16px; }
+.dock-app:not(:disabled):hover .phone-app-icon { transform: scale(1.06); border-color: var(--accent); }
+.dock-app.unavailable .phone-app-icon { opacity: 0.4; }
+.dock-app:disabled { cursor: default; }
+.dock-app .phone-app-name { font-size: 11px; }
+.dock-cost { font-size: 10px; color: var(--accent); letter-spacing: 0.3px; }
+.dock-app.unavailable .dock-cost { color: var(--text-muted); }
 
 .phone-badge {
   position: absolute;
@@ -269,43 +340,16 @@
 }
 .ponte-meter-label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.5px; }
 
-.ponte-week {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px 14px;
-  background: var(--accent-soft);
-  border-left: 3px solid var(--accent);
-  font-size: 14px;
-}
-
 .ponte-week-quote {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 16px;
+  font-size: 17px;
+  line-height: 1.45;
   color: var(--text-muted);
+  padding: 10px 14px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
 }
-
-.ponte-actions { display: flex; flex-direction: column; gap: 8px; }
-
-.ponte-action {
-  display: grid;
-  grid-template-columns: 32px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  background: #221e2a;
-  border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  text-align: left;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
-}
-
-.ponte-action:not(:disabled):hover { border-color: var(--accent); }
-.ponte-action:disabled { opacity: 0.4; cursor: default; }
-.ponte-action-icon { font-size: 20px; text-align: center; }
-.ponte-action-cost { font-size: 12px; color: var(--accent); }
 
 /* Conversa */
 .chat-thread { display: flex; flex-direction: column; gap: 8px; }
@@ -356,6 +400,72 @@
 }
 
 .chat-typing { font-size: 12px; color: var(--text-muted); font-style: italic; }
+.chat-closed { font-size: 13px; color: var(--text-muted); text-align: center; }
+
+/* Ligação: tela de chamada com falas em legenda */
+.call-body { justify-content: flex-start; gap: 16px; }
+.call-head { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 8px; }
+.call-head .phone-avatar.lg { width: 84px; height: 84px; }
+.call-body.compact .call-head { flex-direction: row; justify-content: center; gap: 10px; padding-top: 0; }
+.call-body.compact .call-head .phone-avatar.lg { width: 36px; height: 36px; margin: 0; }
+.call-body.compact .call-name { font-size: 15px; }
+.call-body.answering .call-line.past { display: none; }
+.call-body.compact .call-captions { min-height: 0; }
+.call-name { font-size: 20px; font-weight: 600; }
+.call-clock { font-size: 13px; color: #8fbf8a; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+
+.call-captions {
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  text-align: center;
+}
+
+.call-line { font-family: var(--serif); font-size: 20px; line-height: 1.45; animation: bubbleIn 0.3s ease; transition: opacity 0.4s ease, font-size 0.3s ease; }
+.call-line.narrador { font-style: italic; font-size: 15px; color: var(--text-muted); }
+.call-line.jogador { color: var(--accent); }
+.call-line.past { opacity: 0.35; font-size: 15px; }
+.call-speaker { font-family: var(--sans); font-size: 12px; letter-spacing: 0.5px; }
+
+.call-answer { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; }
+.call-answer:empty { display: none; }
+.call-timer { height: 4px; background: rgba(220, 200, 180, 0.12); border-radius: 2px; overflow: hidden; }
+
+.call-timer-fill {
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left;
+  animation-name: callTimer;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes callTimer {
+  from { transform: scaleX(1); }
+  80% { background: var(--accent); }
+  to { transform: scaleX(0); background: var(--danger); }
+}
+
+.call-footer { display: flex; flex-direction: column; gap: 12px; padding: 12px 12px 16px; border-top: 1px solid var(--panel-border); }
+.call-hangup-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+.call-hangup {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 26px;
+  background: #b5463f;
+  box-shadow: 0 6px 18px rgba(181, 70, 63, 0.35);
+  transform: rotate(135deg);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.call-hangup:hover { background: #c9524a; }
+.call-hangup-label { font-size: 13px; color: var(--text-muted); }
 
 @keyframes bubbleIn {
   from { opacity: 0; transform: translateY(6px); }

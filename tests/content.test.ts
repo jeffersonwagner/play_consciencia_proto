@@ -43,3 +43,21 @@ describe.each(withFragmentos.map(p => [p.name, p] as const))('Modo 1 — %s', (_
     for (const ally of allies) expect(content.allies[ally], ally).toBeDefined();
   });
 });
+
+describe.each(protagonists.filter(p => p.dossie).map(p => [p.name, p] as const))('Modo 3 — %s: documentos', (_name, p) => {
+  const ctx = { flags: {}, ally: null, allyName: null, ponteEnding: null };
+
+  it('artes de documentos referenciadas existem', () => {
+    const missing = p.dossie!.documents(ctx)
+      .filter(d => d.image)
+      .map(d => assetPath.document(d.image!))
+      .filter(path => !existsSync(join(PUBLIC, path)));
+    expect(missing).toEqual([]);
+  });
+
+  it('print e notificação dizem quem enviou', () => {
+    for (const d of p.dossie!.documents(ctx)) {
+      if (d.kind === 'print' || d.kind === 'notificacao') expect(d.from, d.title).toBeTruthy();
+    }
+  });
+});

@@ -1,17 +1,19 @@
 # Ajustes anotados nos testes
 
-Lista de ajustes encontrados ao testar o jogo, ainda não desenvolvidos. Quando um item for
-feito, marque-o e indique o commit.
+Lista de ajustes encontrados ao testar o jogo. Quando um item for feito, marque-o e indique o
+commit.
 
-## Pendentes
+## Feitos (05/11/2026)
 
-- [ ] **Fim do Modo 1 → Modo 2 direto.** Na tela de resumo do Modo 1, incluir um botão que leve
+- [x] **Fim do Modo 1 → Modo 2 direto.** Na tela de resumo do Modo 1, incluir um botão que leve
       ao Modo 2 sem voltar ao menu. A aliada escolhida na Cena 5 (Carla ou Lúcia) já define com
       quem o Modo 2 começa. *(teste do jogo completo, 02/11/2026)*
-- [ ] **Modo 2: responder dentro da conversa.** Hoje, para responder a Júlia, é preciso sair da
+      **Feito:** botão "Continuar no Modo 2 como …" no resumo do Modo 1, e "Continuar no Modo 3"
+      no resumo do Modo 2; na avaliação, só aparece se o modo seguinte fizer parte do ciclo.
+- [x] **Modo 2: responder dentro da conversa.** Hoje, para responder a Júlia, é preciso sair da
       tela da conversa e ir para outra tela. Mostrar as opções de resposta ali mesmo, embaixo
       das mensagens, como em um aplicativo de mensagens. *(teste do jogo completo, 02/11/2026)*
-- [ ] **Modo 2: tela inicial do celular mais realista.** Acabar com o app "A Ponte" como
+- [x] **Modo 2: tela inicial do celular mais realista.** Acabar com o app "A Ponte" como
       intermediário:
       - as 4 ações da semana (Mandar mensagem 1 PA, Fazer ligação 2 PA, Convidar para um café
         3 PA, Pesquisar na internet 1 PA) viram ícones fixos no **rodapé do celular**, como a
@@ -26,7 +28,7 @@ feito, marque-o e indique o commit.
         "Encerrar semana" e o atalho de Cartas. O celular fica só com o que um telefone real
         teria (apps, conversas, ligações).
       *(teste do jogo completo, 02/11/2026)*
-- [ ] **Modo 2: ligação diferente da mensagem (sem voz).** Hoje a ligação é um chat que custa
+- [x] **Modo 2: ligação diferente da mensagem (sem voz).** Hoje a ligação é um chat que custa
       2 PA. Manter as ligações, mas com mecânica própria:
       - **tela de chamada:** foto e nome da Júlia, cronômetro e botão vermelho de desligar, sem
         balões de chat;
@@ -38,7 +40,10 @@ feito, marque-o e indique o commit.
         voz.
       Voz gravada ou sintética fica para depois; as legendas continuam servindo de
       acessibilidade se houver áudio. *(teste do jogo completo, 02/11/2026)*
-- [ ] **Modo 3: documentos do dossiê com visual próprio.** Hoje são só título e texto. Cada um
+      **Feito**, com as falas que já existiam (a narração vira indicação de som/clima). Tempo de
+      resposta de 30 s; o silêncio vale −4. Os deltas das respostas não mudaram: o custo de
+      2 PA continua justificado pelos valores maiores da ligação (±8 contra ±3/−5 da mensagem).
+- [x] **Modo 3: documentos do dossiê com visual próprio.** Hoje são só título e texto. Cada um
       deve parecer o que é:
       - **Foto anexada** (notebook quebrado): ilustração no estilo das artes do Modo 1, com cara
         de foto impressa presa ao dossiê. **Única arte nova**, a cargo do pesquisador. Enquanto
@@ -52,7 +57,9 @@ feito, marque-o e indique o commit.
       Só a foto vira imagem; o resto continua texto editável (facilita revisar depois do Ciclo 1 e
       é lido por leitores de tela). No código: tipo de documento e campo de imagem opcional em
       `DossieDocument`. *(teste do jogo completo, 02/11/2026)*
-- [ ] **Modo 4 no menu principal, como extra.** O Espelho não faz parte da história de nenhuma
+      **Feito.** Falta só a arte da foto: salve em `public/assets/documents/notebook-quebrado.webp`
+      e acrescente `image: 'notebook-quebrado'` ao documento em `content/protagonists/julia/modo3.ts`.
+- [x] **Modo 4 no menu principal, como extra.** O Espelho não faz parte da história de nenhuma
       protagonista, mas hoje aparece dentro do menu da Júlia, junto dos Modos 1 a 3. Tirar o
       Modo 4 da tela de modos da protagonista e colocá-lo na tela inicial ("Escolha uma
       história"), separado dos cards das personagens, como um extra do jogo. Pontos a decidir
@@ -62,3 +69,5 @@ feito, marque-o e indique o commit.
       - **modo avaliação:** o filtro de modos do ciclo (Ciclo 1 = Modos 1 e 2) precisa continuar
         escondendo o Modo 4 também na tela inicial.
       *(teste do jogo completo, 02/11/2026)*
+      **Feito:** seção "Extra" na tela inicial. Mantida a trava (concluir o Modo 3 de uma
+      história); na avaliação, o extra só aparece se o Modo 4 fizer parte do ciclo.

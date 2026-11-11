@@ -45,10 +45,11 @@ export const dossie: DossieContent = {
   startWellbeing: { positivo: 65, neutro: 50, negativo: 40, 'sem-modo2': 50 },
   relato,
   documents: ctx => [
-    { title: 'Foto anexada', body: 'Notebook com a tela estilhaçada e a carcaça partida no chão de madeira de um quarto.' },
-    { title: 'Print de mensagens', body: '"Pra que postar foto assim? Não tem necessidade de um monte de gente ficar vendo seu corpo. Apaga isso agora. Não gosto que fiquem vendo o que é meu."' },
-    { title: 'Ficha do NAE', body: `Primeiro atendimento psicológico (Sofia). Estudante relata destruição do notebook pelo namorado. ${ctx.ally === 'lucia' ? 'Acompanhada pela mãe, que tentou relativizar o episódio.' : ctx.ally === 'carla' ? 'Acompanhada pela amiga Carla.' : ''} Encaminhada à rede.` },
-    { title: 'Mensagem recente de Leo', body: '"Depois de tudo que eu fiz por você, você não confia em mim? Me passa a senha."' },
+    // A foto ganha arte quando existir public/assets/documents/<id>.webp (campo `image`)
+    { kind: 'foto', title: 'Foto anexada', body: 'Notebook com a tela estilhaçada e a carcaça partida no chão de madeira de um quarto.' },
+    { kind: 'print', from: 'Leo', title: 'Print de mensagens', body: '"Pra que postar foto assim? Não tem necessidade de um monte de gente ficar vendo seu corpo. Apaga isso agora. Não gosto que fiquem vendo o que é meu."' },
+    { kind: 'ficha', title: 'Ficha do NAE', body: `Primeiro atendimento psicológico (Sofia). Estudante relata destruição do notebook pelo namorado. ${ctx.ally === 'lucia' ? 'Acompanhada pela mãe, que tentou relativizar o episódio.' : ctx.ally === 'carla' ? 'Acompanhada pela amiga Carla.' : ''} Encaminhada à rede.` },
+    { kind: 'notificacao', from: 'Leo', title: 'Mensagem recente de Leo', body: '"Depois de tudo que eu fiz por você, você não confia em mim? Me passa a senha."' },
   ],
   correctTags: ['patrimonial', 'psicologica'],
   acceptableTags: ['gaslighting'],

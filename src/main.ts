@@ -39,12 +39,35 @@ const store = EVALUATION_OFF ? prefixedStore(browserStore(), 'teste_') : browser
 const saves = new SaveStore(store);
 const telemetry = new Telemetry(store);
 
+// "Continuar no Modo N" no fim de um modo: guarda o pedido e recarrega
+// (palco limpo, como no exit); o menu, ao abrir, inicia o modo pedido.
+const NEXT_MODE_KEY = 'play_consciencia_proximo_modo';
+/** Modos do menu aberto por último (na avaliação, só os do ciclo). */
+let menuModes: number[] | undefined;
+
 const deps: FragmentosDeps = {
   saves,
   telemetry,
   // Recarregar garante um palco limpo (áudio, timers, listeners)
   exit: () => location.reload(),
+  continueTo: {
+    allowed: mode => !menuModes || menuModes.includes(mode),
+    go: (mode, p) => {
+      try { sessionStorage.setItem(NEXT_MODE_KEY, JSON.stringify({ mode, protagonist: p.id })); } catch { /* sem sessão: volta ao menu */ }
+      location.reload();
+    },
+  },
 };
+
+function takeNextMode(): { mode: number; protagonist: string } | null {
+  try {
+    const raw = sessionStorage.getItem(NEXT_MODE_KEY);
+    sessionStorage.removeItem(NEXT_MODE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
 
 mountSafetyBar();
 
@@ -56,6 +79,7 @@ export interface HubOptions {
 }
 
 function openHub({ footer, modes }: HubOptions = {}): void {
+  menuModes = modes;
   renderHub(protagonists, {
     campaign: id => saves.campaign(id),
     espelho: () => saves.espelho(),
@@ -95,6 +119,25 @@ function openHub({ footer, modes }: HubOptions = {}): void {
     footer,
     modes,
   });
+  startNextMode(modes);
+}
+
+/** Inicia o modo pedido por "Continuar no Modo N", se ele estiver liberado. */
+function startNextMode(modes?: number[]): void {
+  const next = takeNextMode();
+  const p = next && protagonists.find(x => x.id === next.protagonist);
+  if (!next || !p || (modes && !modes.includes(next.mode))) return;
+  const campaign = saves.campaign(p.id);
+  if (next.mode === 2 && p.ponte && campaign.fragmentos?.completed && campaign.fragmentos.ally) {
+    const ally = campaign.fragmentos.ally;
+    const resume = campaign.ponte?.ally === ally && campaign.ponte.ending === null;
+    byId('hub-screen').classList.add('hidden');
+    startPonte(p, ally, !resume, deps);
+  } else if (next.mode === 3 && p.dossie && campaign.ponte?.ending) {
+    const resume = campaign.dossie?.ending === null;
+    byId('hub-screen').classList.add('hidden');
+    startDossie(p, !resume, deps);
+  }
 }
 
 // O módulo de pesquisa só entra na build de coleta (npm run build:pesquisa).
